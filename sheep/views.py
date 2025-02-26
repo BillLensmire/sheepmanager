@@ -146,3 +146,63 @@ class SheepDeleteView(DeleteView):
         sheep = self.get_object()
         messages.success(request, f"Sheep '{sheep.tag_number}' deleted successfully!")
         return super().delete(request, *args, **kwargs)
+
+# Sheep Image Form
+class SheepImageForm(forms.ModelForm):
+    class Meta:
+        model = SheepImage
+        fields = ['image', 'caption']
+        widgets = {
+            'caption': forms.TextInput(attrs={'placeholder': 'Optional description of the image'}),
+        }
+
+# Add Image to Sheep View
+class SheepImageCreateView(CreateView):
+    model = SheepImage
+    form_class = SheepImageForm
+    template_name = 'sheep/sheep_image_form.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        sheep_id = self.kwargs.get('pk')
+        context['sheep'] = get_object_or_404(Sheep, pk=sheep_id)
+        return context
+    
+    def form_valid(self, form):
+        # Create the image but don't save to DB yet
+        image = form.save(commit=False)
+        image.save()  # Save to get an ID
+        
+        # Get the sheep and add this image to its additional_images
+        sheep_id = self.kwargs.get('pk')
+        sheep = get_object_or_404(Sheep, pk=sheep_id)
+        sheep.additional_images.add(image)
+        
+        messages.success(self.request, f"Image added to {sheep.tag_number} successfully!")
+        return redirect('sheep-detail', pk=sheep_id)
+
+# Delete Sheep Image View
+class SheepImageDeleteView(DeleteView):
+    model = SheepImage
+    template_name = 'sheep/sheep_image_confirm_delete.html'
+    context_object_name = 'image'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Find which sheep this image belongs to
+        image = self.get_object()
+        sheep = image.sheep_additional.first()
+        context['sheep'] = sheep
+        return context
+    
+    def get_success_url(self):
+        # Get the sheep this image belongs to
+        image = self.get_object()
+        sheep = image.sheep_additional.first()
+        return reverse_lazy('sheep-detail', kwargs={'pk': sheep.id})
+    
+    def delete(self, request, *args, **kwargs):
+        image = self.get_object()
+        sheep = image.sheep_additional.first()
+        messages.success(request, f"Image deleted from {sheep.tag_number} successfully!")
+        return super().delete(request, *args, **kwargs)

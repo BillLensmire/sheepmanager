@@ -19,11 +19,14 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic import RedirectView
+from django.contrib.auth.decorators import login_required
+from .views import HomeView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('sheep/', include('sheep.urls')),
-    path('', RedirectView.as_view(url='sheep/breeds/', permanent=False)),
+    #path('', RedirectView.as_view(url='sheep/breeds/', permanent=False)),
+    path('', HomeView.as_view(), name='home'),
 ]
 
 # Serve media files in development

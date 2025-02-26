@@ -15,4 +15,8 @@ urlpatterns = [
     path('sheep/<int:pk>/', views.SheepDetailView.as_view(), name='sheep-detail'),
     path('sheep/<int:pk>/edit/', views.SheepUpdateView.as_view(), name='sheep-update'),
     path('sheep/<int:pk>/delete/', views.SheepDeleteView.as_view(), name='sheep-delete'),
+    path('sheep/<int:pk>/add-image/', views.SheepImageCreateView.as_view(), name='sheep-add-image'),
+    
+    # Sheep Image URLs
+    path('sheep/images/<int:pk>/delete/', views.SheepImageDeleteView.as_view(), name='sheep-delete-image'),
 ]
