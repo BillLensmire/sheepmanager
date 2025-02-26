@@ -76,7 +76,7 @@
         </div>
 
         <!-- Offspring -->
-        {% if offspring %}
+        {% if offspring_with_lambing %}
         <div class="card mb-4">
             <div class="card-header">
                 <h5 class="card-title mb-0">Offspring</h5>
@@ -90,15 +90,16 @@
                                 <th>Gender</th>
                                 <th>Birth Date</th>
                                 <th>Status</th>
+                                <th>Lambing Record</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for child in offspring %}
+                            {% for child in offspring_with_lambing %}
                             <tr>
                                 <td>{{ child.tag_number }}</td>
                                 <td>{{ child.get_gender_display }}</td>
-                                <td>{{ child.birth_date|date:"M d, Y"|default:"-" }}</td>
+                                <td>{{ child.date_of_birth|date:"M d, Y"|default:"-" }}</td>
                                 <td>
                                     <span class="badge {% if child.status == 'ACTIVE' %}bg-success
                                                    {% elif child.status == 'SOLD' %}bg-primary
@@ -109,8 +110,17 @@
                                     </span>
                                 </td>
                                 <td>
+                                    {% if child.birth_record %}
+                                    <a href="{% url 'lambing-record-detail' child.birth_record.id %}" class="btn btn-sm btn-outline-info">
+                                        <i class="fas fa-baby me-1"></i>View
+                                    </a>
+                                    {% else %}
+                                    -
+                                    {% endif %}
+                                </td>
+                                <td>
                                     <a href="{% url 'sheep-detail' child.id %}" class="btn btn-sm btn-info">
-                                        <i class="fas fa-eye"></i>
+                                        <i class="fas fa-eye me-1"></i>View
                                     </a>
                                 </td>
                             </tr>
