@@ -1,4 +1,4 @@
-{% extends 'sheep/base.html' %}
+{% extends 'base.html' %}
 
 {% block title %}Sheep Breeds | Sheep Manager{% endblock %}
 
@@ -36,9 +36,11 @@
                                         <a href="{% url 'breed-detail' breed.id %}" class="btn btn-sm btn-info">
                                             <i class="fas fa-eye"></i>
                                         </a>
+                                        &nbsp;&nbsp;&nbsp;
                                         <a href="{% url 'breed-update' breed.id %}" class="btn btn-sm btn-warning">
                                             <i class="fas fa-edit"></i>
                                         </a>
+                                        &nbsp;&nbsp;&nbsp;
                                         <a href="{% url 'breed-delete' breed.id %}" class="btn btn-sm btn-danger">
                                             <i class="fas fa-trash"></i>
                                         </a>
