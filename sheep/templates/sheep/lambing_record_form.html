@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    {% if form.instance.id %}Edit Lambing Record{% else %}Add New Lambing Record{% endif %} | Sheep Manager
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1>
+            <i class="fas fa-{% if form.instance.id %}edit{% else %}plus{% endif %} me-2"></i>
+            {% if form.instance.id %}
+                Edit Lambing Record
+            {% else %}
+                Add New Lambing Record
+            {% endif %}
+        </h1>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{% if form.instance.id %}{% url 'lambing-record-detail' form.instance.id %}{% else %}{% url 'lambing-record-list' %}{% endif %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            {% if form.errors %}
+                <div class="alert alert-danger">
+                    <h4 class="alert-heading">Please correct the following errors:</h4>
+                    {{ form.errors }}
+                </div>
+            {% endif %}
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <h5>Basic Information</h5>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.ewe.id_for_label }}" class="form-label">Ewe *</label>
+                        {{ form.ewe }}
+                        {% if form.ewe.errors %}
+                            <div class="invalid-feedback d-block">{{ form.ewe.errors }}</div>
+                        {% endif %}
+                        <div class="form-text">Select the female sheep that gave birth</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.breeding_record.id_for_label }}" class="form-label">Breeding Record</label>
+                        {{ form.breeding_record }}
+                        {% if form.breeding_record.errors %}
+                            <div class="invalid-feedback d-block">{{ form.breeding_record.errors }}</div>
+                        {% endif %}
+                        <div class="form-text">Link to a breeding record (optional)</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.date.id_for_label }}" class="form-label">Date *</label>
+                        {{ form.date }}
+                        {% if form.date.errors %}
+                            <div class="invalid-feedback d-block">{{ form.date.errors }}</div>
+                        {% endif %}
+                        <div class="form-text">Date when the lambing occurred</div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <h5>Lambing Details</h5>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.total_born.id_for_label }}" class="form-label">Total Born *</label>
+                        {{ form.total_born }}
+                        {% if form.total_born.errors %}
+                            <div class="invalid-feedback d-block">{{ form.total_born.errors }}</div>
+                        {% endif %}
+                        <div class="form-text">Total number of lambs born</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.born_alive.id_for_label }}" class="form-label">Born Alive *</label>
+                        {{ form.born_alive }}
+                        {% if form.born_alive.errors %}
+                            <div class="invalid-feedback d-block">{{ form.born_alive.errors }}</div>
+                        {% endif %}
+                        <div class="form-text">Number of lambs born alive</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.born_dead.id_for_label }}" class="form-label">Born Dead *</label>
+                        {{ form.born_dead }}
+                        {% if form.born_dead.errors %}
+                            <div class="invalid-feedback d-block">{{ form.born_dead.errors }}</div>
+                        {% endif %}
+                        <div class="form-text">Number of lambs born dead</div>
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        {{ form.assisted }}
+                        <label class="form-check-label" for="{{ form.assisted.id_for_label }}">
+                            Assisted Birth
+                        </label>
+                        {% if form.assisted.errors %}
+                            <div class="invalid-feedback d-block">{{ form.assisted.errors }}</div>
+                        {% endif %}
+                        <div class="form-text">Check if assistance was required during birth</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <h5>Additional Information</h5>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.complications.id_for_label }}" class="form-label">Complications</label>
+                        {{ form.complications }}
+                        {% if form.complications.errors %}
+                            <div class="invalid-feedback d-block">{{ form.complications.errors }}</div>
+                        {% endif %}
+                        <div class="form-text">Any complications during the birth</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.notes.id_for_label }}" class="form-label">Notes</label>
+                        {{ form.notes }}
+                        {% if form.notes.errors %}
+                            <div class="invalid-feedback d-block">{{ form.notes.errors }}</div>
+                        {% endif %}
+                        <div class="form-text">Any additional notes about the lambing</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.primary_image.id_for_label }}" class="form-label">Primary Image</label>
+                        {% if form.instance.primary_image %}
+                            <div class="mb-2">
+                                <img src="{{ form.instance.primary_image.url }}" alt="Current primary image" class="img-thumbnail" style="max-height: 150px;">
+                            </div>
+                        {% endif %}
+                        {{ form.primary_image }}
+                        {% if form.primary_image.errors %}
+                            <div class="invalid-feedback d-block">{{ form.primary_image.errors }}</div>
+                        {% endif %}
+                        <div class="form-text">Main image of the lambing event</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-2"></i>{% if form.instance.id %}Update{% else %}Save{% endif %} Lambing Record
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Breeding Record | Sheep Manager{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1><i class="fas fa-trash me-2"></i>Delete Breeding Record</h1>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{% url 'breeding-record-detail' breeding_record.id %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="alert alert-danger">
+            <h4 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>Warning!</h4>
+            <p>You are about to delete the breeding record between <strong>{{ breeding_record.ewe.tag_number }}</strong> and <strong>{{ breeding_record.ram.tag_number }}</strong> from {{ breeding_record.date_started|date:"M d, Y" }}.</p>
+            <p>This action cannot be undone. All data associated with this breeding record will be permanently deleted.</p>
+            
+            {% if breeding_record.lambing %}
+            <hr>
+            <p><strong>The following related records will also be affected:</strong></p>
+            <ul>
+                <li>Lambing record from {{ breeding_record.lambing.date|date:"M d, Y" }}</li>
+            </ul>
+            {% endif %}
+        </div>
+        
+        <form method="post">
+            {% csrf_token %}
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <a href="{% url 'breeding-record-detail' breeding_record.id %}" class="btn btn-secondary me-md-2">
+                    <i class="fas fa-times me-2"></i>Cancel
+                </a>
+                <button type="submit" class="btn btn-danger">
+                    <i class="fas fa-trash me-2"></i>Delete Permanently
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

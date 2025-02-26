@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% block title %}Breeding Record Details | Sheep Manager{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1>
+            <i class="fas fa-venus-mars me-2"></i>
+            Breeding Record: {{ breeding_record.ewe.tag_number }} & {{ breeding_record.ram.tag_number }}
+        </h1>
+    </div>
+    <div class="col-md-4 text-end">
+        <div class="btn-group" role="group">
+            <a href="{% url 'breeding-record-update' breeding_record.id %}" class="btn btn-warning">
+                <i class="fas fa-edit me-2"></i>Edit
+            </a>
+            <a href="{% url 'breeding-record-delete' breeding_record.id %}" class="btn btn-danger">
+                <i class="fas fa-trash me-2"></i>Delete
+            </a>
+            <a href="{% url 'breeding-record-list' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Main Info -->
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Breeding Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Ewe:</strong> <a href="{% url 'sheep-detail' breeding_record.ewe.id %}">{{ breeding_record.ewe.tag_number }}{% if breeding_record.ewe.name %} ({{ breeding_record.ewe.name }}){% endif %}</a></p>
+                        <p><strong>Ram:</strong> <a href="{% url 'sheep-detail' breeding_record.ram.id %}">{{ breeding_record.ram.tag_number }}{% if breeding_record.ram.name %} ({{ breeding_record.ram.name }}){% endif %}</a></p>
+                        <p><strong>Status:</strong> 
+                            <span class="badge {% if breeding_record.status == 'PLANNED' %}bg-info
+                                           {% elif breeding_record.status == 'IN_PROGRESS' %}bg-primary
+                                           {% elif breeding_record.status == 'SUCCESSFUL' %}bg-success
+                                           {% elif breeding_record.status == 'UNSUCCESSFUL' %}bg-danger
+                                           {% else %}bg-secondary{% endif %}">
+                                {{ breeding_record.get_status_display }}
+                            </span>
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Start Date:</strong> {{ breeding_record.date_started|date:"F d, Y" }}</p>
+                        <p><strong>End Date:</strong> {{ breeding_record.date_ended|date:"F d, Y"|default:"Not recorded" }}</p>
+                        <p><strong>Expected Lambing Date:</strong> {{ breeding_record.expected_lambing_date|date:"F d, Y"|default:"Not calculated" }}</p>
+                    </div>
+                </div>
+                {% if breeding_record.notes %}
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <h6>Notes:</h6>
+                        <p>{{ breeding_record.notes|linebreaks }}</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Lambing Record -->
+        {% if lambing_record %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Lambing Record</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Date:</strong> {{ lambing_record.date|date:"F d, Y" }}</p>
+                        <p><strong>Total Born:</strong> {{ lambing_record.total_born }}</p>
+                        <p><strong>Born Alive:</strong> {{ lambing_record.born_alive }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Assisted:</strong> {% if lambing_record.assisted %}Yes{% else %}No{% endif %}</p>
+                        {% if lambing_record.complications %}
+                        <p><strong>Complications:</strong> {{ lambing_record.complications }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                {% if lambing_record.notes %}
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <h6>Notes:</h6>
+                        <p>{{ lambing_record.notes|linebreaks }}</p>
+                    </div>
+                </div>
+                {% endif %}
+                <div class="mt-3">
+                    <a href="#" class="btn btn-sm btn-info">View Full Lambing Record</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Ewe Information</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Tag Number:</strong> {{ breeding_record.ewe.tag_number }}</p>
+                <p><strong>Name:</strong> {{ breeding_record.ewe.name|default:"Not specified" }}</p>
+                <p><strong>Breed:</strong> {{ breeding_record.ewe.breed.name }}</p>
+                <p><strong>Age:</strong> {{ breeding_record.ewe.age_years|default:"Unknown" }} years</p>
+                <a href="{% url 'sheep-detail' breeding_record.ewe.id %}" class="btn btn-sm btn-primary">View Ewe Details</a>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Ram Information</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Tag Number:</strong> {{ breeding_record.ram.tag_number }}</p>
+                <p><strong>Name:</strong> {{ breeding_record.ram.name|default:"Not specified" }}</p>
+                <p><strong>Breed:</strong> {{ breeding_record.ram.breed.name }}</p>
+                <p><strong>Age:</strong> {{ breeding_record.ram.age_years|default:"Unknown" }} years</p>
+                <a href="{% url 'sheep-detail' breeding_record.ram.id %}" class="btn btn-sm btn-primary">View Ram Details</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
