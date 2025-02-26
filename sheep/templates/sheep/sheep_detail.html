@@ -1,0 +1,309 @@
+{% extends 'sheep/base.html' %}
+
+{% block title %}{{ sheep.tag_number }} | Sheep Manager{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1>
+            <i class="fas fa-sheep me-2"></i>
+            {% if sheep.name %}{{ sheep.name }} ({{ sheep.tag_number }}){% else %}{{ sheep.tag_number }}{% endif %}
+        </h1>
+    </div>
+    <div class="col-md-4 text-end">
+        <div class="btn-group" role="group">
+            <a href="{% url 'sheep-update' sheep.id %}" class="btn btn-warning">
+                <i class="fas fa-edit me-2"></i>Edit
+            </a>
+            <a href="{% url 'sheep-delete' sheep.id %}" class="btn btn-danger">
+                <i class="fas fa-trash me-2"></i>Delete
+            </a>
+            <a href="{% url 'sheep-list' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Main Info -->
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Sheep Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Tag Number:</strong> {{ sheep.tag_number }}</p>
+                        <p><strong>Name:</strong> {{ sheep.name|default:"Not specified" }}</p>
+                        <p><strong>Gender:</strong> {{ sheep.get_gender_display }}</p>
+                        <p><strong>Breed:</strong> <a href="{% url 'breed-detail' sheep.breed.id %}">{{ sheep.breed.name }}</a></p>
+                        <p><strong>Status:</strong> 
+                            <span class="badge {% if sheep.status == 'ACTIVE' %}bg-success
+                                           {% elif sheep.status == 'SOLD' %}bg-primary
+                                           {% elif sheep.status == 'DECEASED' %}bg-danger
+                                           {% elif sheep.status == 'CULLED' %}bg-warning
+                                           {% else %}bg-secondary{% endif %}">
+                                {{ sheep.get_status_display }}
+                            </span>
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Birth Date:</strong> {{ sheep.date_of_birth|date:"F d, Y"|default:"Unknown" }}</p>
+                        <p><strong>Weight:</strong> {{ sheep.weight_current|default:"Not recorded" }} {% if sheep.weight %}kg{% endif %}</p>
+                        <p><strong>Acquisition Date:</strong> {{ sheep.date_acquired|date:"F d, Y"|default:"Not recorded" }}</p>
+                        {% if sheep.mother %}
+                        <p><strong>Dam:</strong> <a href="{% url 'sheep-detail' sheep.mother.id %}">{{ sheep.mother.tag_number }} - {{ sheep.mother.name }}</a></p>
+                        {% endif %}
+                        {% if sheep.father %}
+                        <p><strong>Sire:</strong> <a href="{% url 'sheep-detail' sheep.father.id %}">{{ sheep.father.tag_number }} - {{ sheep.father.name }}</a></p>
+                        {% endif %}
+                    </div>
+                </div>
+                {% if sheep.notes %}
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <h6>Notes:</h6>
+                        <p>{{ sheep.notes|linebreaks }}</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Offspring -->
+        {% if offspring %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Offspring</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Tag #</th>
+                                <th>Gender</th>
+                                <th>Birth Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for child in offspring %}
+                            <tr>
+                                <td>{{ child.tag_number }}</td>
+                                <td>{{ child.get_gender_display }}</td>
+                                <td>{{ child.birth_date|date:"M d, Y"|default:"-" }}</td>
+                                <td>
+                                    <span class="badge {% if child.status == 'ACTIVE' %}bg-success
+                                                   {% elif child.status == 'SOLD' %}bg-primary
+                                                   {% elif child.status == 'DECEASED' %}bg-danger
+                                                   {% elif child.status == 'CULLED' %}bg-warning
+                                                   {% else %}bg-secondary{% endif %}">
+                                        {{ child.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{% url 'sheep-detail' child.id %}" class="btn btn-sm btn-info">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Health Records -->
+        {% if health_records %}
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Recent Health Records</h5>
+                <!-- Add link to all health records when implemented -->
+                <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Treatment</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in health_records %}
+                            <tr>
+                                <td>{{ record.date|date:"M d, Y" }}</td>
+                                <td>{{ record.get_record_type_display }}</td>
+                                <td>{{ record.treatment|default:"-" }}</td>
+                                <td>{{ record.notes|truncatechars:30 }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Breeding Records - Female -->
+        {% if sheep.gender == 'F' and breeding_as_ewe %}
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Recent Breeding Records</h5>
+                <!-- Add link to all breeding records when implemented -->
+                <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Start Date</th>
+                                <th>Ram</th>
+                                <th>Status</th>
+                                <th>Expected Lambing</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in breeding_as_ewe %}
+                            <tr>
+                                <td>{{ record.date_started|date:"M d, Y" }}</td>
+                                <td>
+                                    <a href="{% url 'sheep-detail' record.ram.id %}">
+                                        {{ record.ram.tag_number }}
+                                    </a>
+                                </td>
+                                <td>{{ record.get_status_display }}</td>
+                                <td>{{ record.expected_lambing_date|date:"M d, Y"|default:"-" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Breeding Records - Male -->
+        {% if sheep.gender == 'M' and breeding_as_ram %}
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Recent Breeding Records</h5>
+                <!-- Add link to all breeding records when implemented -->
+                <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Start Date</th>
+                                <th>Ewe</th>
+                                <th>Status</th>
+                                <th>Expected Lambing</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in breeding_as_ram %}
+                            <tr>
+                                <td>{{ record.date_started|date:"M d, Y" }}</td>
+                                <td>
+                                    <a href="{% url 'sheep-detail' record.ewe.id %}">
+                                        {{ record.ewe.tag_number }}
+                                    </a>
+                                </td>
+                                <td>{{ record.get_status_display }}</td>
+                                <td>{{ record.expected_lambing_date|date:"M d, Y"|default:"-" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Lambing Records -->
+        {% if sheep.gender == 'F' and lambings %}
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Lambing Records</h5>
+                <!-- Add link to all lambing records when implemented -->
+                <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Total Born</th>
+                                <th>Born Alive</th>
+                                <th>Assisted</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in lambings %}
+                            <tr>
+                                <td>{{ record.date|date:"M d, Y" }}</td>
+                                <td>{{ record.total_born }}</td>
+                                <td>{{ record.born_alive }}</td>
+                                <td>{{ record.assisted|yesno:"Yes,No" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-md-4">
+        <!-- Primary Image -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Primary Image</h5>
+            </div>
+            <div class="card-body text-center">
+                {% if sheep.primary_image %}
+                    <img src="{{ sheep.primary_image.url }}" alt="{{ sheep.tag_number }}" class="img-fluid rounded">
+                {% else %}
+                    <div class="alert alert-secondary">
+                        <i class="fas fa-image fa-3x mb-3"></i>
+                        <p>No image available</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Additional Images -->
+        {% if sheep.additional_images.all %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Additional Images</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-2">
+                    {% for img in sheep.additional_images.all %}
+                    <div class="col-6">
+                        <img src="{{ img.image.url }}" alt="{{ img.caption|default:sheep.tag_number }}" class="img-fluid rounded">
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

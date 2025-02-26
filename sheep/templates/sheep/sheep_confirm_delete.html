@@ -1,0 +1,60 @@
+{% extends 'sheep/base.html' %}
+
+{% block title %}Delete Sheep {{ sheep.tag_number }} | Sheep Manager{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1><i class="fas fa-trash me-2"></i>Delete Sheep</h1>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{% url 'sheep-detail' sheep.id %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="alert alert-danger">
+            <h4 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>Warning!</h4>
+            <p>You are about to delete the sheep with tag number <strong>{{ sheep.tag_number }}</strong>{% if sheep.name %} ({{ sheep.name }}){% endif %}.</p>
+            <p>This action cannot be undone. All data associated with this sheep will be permanently deleted.</p>
+            
+            {% if sheep.lambings.all or sheep.breeding_as_ewe.all or sheep.breeding_as_ram.all or sheep.health_records.all %}
+            <hr>
+            <p><strong>The following related records will also be affected:</strong></p>
+            <ul>
+                {% if sheep.lambings.all %}
+                <li>{{ sheep.lambings.all.count }} lambing record(s)</li>
+                {% endif %}
+                
+                {% if sheep.breeding_as_ewe.all %}
+                <li>{{ sheep.breeding_as_ewe.all.count }} breeding record(s) as ewe</li>
+                {% endif %}
+                
+                {% if sheep.breeding_as_ram.all %}
+                <li>{{ sheep.breeding_as_ram.all.count }} breeding record(s) as ram</li>
+                {% endif %}
+                
+                {% if sheep.health_records.all %}
+                <li>{{ sheep.health_records.all.count }} health record(s)</li>
+                {% endif %}
+            </ul>
+            {% endif %}
+        </div>
+        
+        <form method="post">
+            {% csrf_token %}
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <a href="{% url 'sheep-detail' sheep.id %}" class="btn btn-secondary me-md-2">
+                    <i class="fas fa-times me-2"></i>Cancel
+                </a>
+                <button type="submit" class="btn btn-danger">
+                    <i class="fas fa-trash me-2"></i>Delete Permanently
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

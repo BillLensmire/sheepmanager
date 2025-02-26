@@ -1,0 +1,45 @@
+{% extends 'sheep/base.html' %}
+
+{% block title %}{{ breed.name }} | Sheep Manager{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1><i class="fas fa-info-circle me-2"></i>Breed Details</h1>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{% url 'breed-list' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Breeds
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h2 class="mb-0">{{ breed.name }}</h2>
+    </div>
+    <div class="card-body">
+        <h5 class="card-title">Description</h5>
+        <p class="card-text">
+            {% if breed.description %}
+                {{ breed.description|linebreaks }}
+            {% else %}
+                <em>No description provided.</em>
+            {% endif %}
+        </p>
+        
+        <h5 class="card-title mt-4">Statistics</h5>
+        <p>Number of sheep of this breed: {{ breed.sheep.count }}</p>
+    </div>
+    <div class="card-footer">
+        <div class="btn-group" role="group">
+            <a href="{% url 'breed-update' breed.id %}" class="btn btn-warning">
+                <i class="fas fa-edit me-2"></i>Edit
+            </a>
+            <a href="{% url 'breed-delete' breed.id %}" class="btn btn-danger">
+                <i class="fas fa-trash me-2"></i>Delete
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

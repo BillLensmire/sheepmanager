@@ -1,0 +1,47 @@
+{% extends 'sheep/base.html' %}
+
+{% block title %}Delete {{ breed.name }} | Sheep Manager{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1><i class="fas fa-trash me-2"></i>Delete Breed</h1>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{% url 'breed-list' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Breeds
+        </a>
+    </div>
+</div>
+
+<div class="card border-danger">
+    <div class="card-header bg-danger text-white">
+        <h5 class="mb-0">Confirm Deletion</h5>
+    </div>
+    <div class="card-body">
+        <p class="card-text">
+            Are you sure you want to delete the breed <strong>"{{ breed.name }}"</strong>?
+        </p>
+        
+        {% if breed.sheep.count > 0 %}
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>Warning:</strong> This breed is currently assigned to {{ breed.sheep.count }} sheep. 
+                Deleting this breed may affect those records.
+            </div>
+        {% endif %}
+        
+        <form method="post">
+            {% csrf_token %}
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <a href="{% url 'breed-detail' breed.id %}" class="btn btn-secondary me-md-2">
+                    <i class="fas fa-times me-2"></i>Cancel
+                </a>
+                <button type="submit" class="btn btn-danger">
+                    <i class="fas fa-trash me-2"></i>Delete
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

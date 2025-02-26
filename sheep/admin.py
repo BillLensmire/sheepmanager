@@ -103,13 +103,13 @@ class HealthRecordAdmin(admin.ModelAdmin):
 
 @admin.register(SheepImage)
 class SheepImageAdmin(admin.ModelAdmin):
-    list_display = ('caption', 'tag_number', 'date_added')
-    search_fields = ('caption', 'tag_number')
+    list_display = ('caption', 'date_added')
+    search_fields = ('caption', 'date_added')
     exclude = ('sheep_additional',)
 
 
 @admin.register(LambingImage)
 class LambingImageAdmin(admin.ModelAdmin):
-    list_display = ('caption', 'tag_number', 'date_added')
-    search_fields = ('caption', 'tag_number')
+    list_display = ('caption', 'date_added')
+    search_fields = ('caption', 'date_added')
     exclude = ('lambing_records',)
