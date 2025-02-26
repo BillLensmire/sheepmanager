@@ -112,7 +112,12 @@ class SheepDetailView(DetailView):
         context['lambings'] = sheep.lambings.all().order_by('-date')[:5] if sheep.gender == 'F' else None
         context['breeding_as_ram'] = sheep.breeding_as_ram.all().order_by('-date_started')[:5] if sheep.gender == 'M' else None
         context['breeding_as_ewe'] = sheep.breeding_as_ewe.all().order_by('-date_started')[:5] if sheep.gender == 'F' else None
-        context['offspring'] = Sheep.objects.filter(mother=sheep) | Sheep.objects.filter(father=sheep)
+        
+        # Get offspring with their lambing records
+        offspring = Sheep.objects.filter(mother=sheep) | Sheep.objects.filter(father=sheep)
+        # Add lambing record information to each offspring
+        context['offspring_with_lambing'] = offspring.select_related('birth_record')
+        
         context['breeding_records'] = BreedingRecord.objects.filter(ewe=sheep) | BreedingRecord.objects.filter(ram=sheep)
         return context
 
@@ -136,6 +141,11 @@ class SheepCreateView(CreateView):
         return initial
     
     def form_valid(self, form):
+        # If creating a lamb from a lambing record, ensure birth_record is set
+        if 'birth_record' in self.request.GET:
+            birth_record_id = self.request.GET.get('birth_record')
+            form.instance.birth_record_id = birth_record_id
+        
         messages.success(self.request, f"Sheep '{form.instance.tag_number}' created successfully!")
         return super().form_valid(form)
     
