@@ -75,6 +75,7 @@ class Sheep(models.Model):
     # Lineage
     mother = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='offspring_as_mother')
     father = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='offspring_as_father')
+    birth_record = models.ForeignKey('LambingRecord', null=True, blank=True, on_delete=models.SET_NULL, related_name='lambs')
     
     # Status
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='ACTIVE')

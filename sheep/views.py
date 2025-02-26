@@ -64,7 +64,7 @@ class BreedDeleteView(DeleteView):
 class SheepForm(forms.ModelForm):
     class Meta:
         model = Sheep
-        fields = ['tag_number', 'name', 'gender', 'breed', 'mother', 'father', 'weight_current', 'date_of_birth',
+        fields = ['tag_number', 'name', 'gender', 'breed', 'mother', 'father', 'birth_record', 'weight_current', 'date_of_birth',
         'date_acquired',
                  'status', 'primary_image', 'notes']
         widgets = {
@@ -122,9 +122,28 @@ class SheepCreateView(CreateView):
     template_name = 'sheep/sheep_form.html'
     success_url = reverse_lazy('sheep-list')
     
+    def get_initial(self):
+        initial = super().get_initial()
+        # Pre-fill form fields if provided in GET parameters
+        if 'mother' in self.request.GET:
+            initial['mother'] = self.request.GET.get('mother')
+        if 'father' in self.request.GET:
+            initial['father'] = self.request.GET.get('father')
+        if 'birth_record' in self.request.GET:
+            initial['birth_record'] = self.request.GET.get('birth_record')
+        if 'date_of_birth' in self.request.GET:
+            initial['date_of_birth'] = self.request.GET.get('date_of_birth')
+        return initial
+    
     def form_valid(self, form):
         messages.success(self.request, f"Sheep '{form.instance.tag_number}' created successfully!")
         return super().form_valid(form)
+    
+    def get_success_url(self):
+        # If creating a lamb from a lambing record, redirect back to the lambing record
+        if 'birth_record' in self.request.GET:
+            return reverse_lazy('lambing-record-detail', kwargs={'pk': self.request.GET.get('birth_record')})
+        return self.success_url
 
 class SheepUpdateView(UpdateView):
     model = Sheep
@@ -356,13 +375,8 @@ class LambingRecordDetailView(DetailView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Get lambs associated with this lambing record (if any)
-        # This assumes lambs have a ForeignKey to LambingRecord
-        # If not, this would need to be adjusted based on your data model
-        context['lambs'] = Sheep.objects.filter(
-            mother=self.object.ewe,
-            date_of_birth=self.object.date
-        )
+        # Get lambs associated with this lambing record using the new relationship
+        context['lambs'] = self.object.lambs.all()
         return context
 
 class LambingRecordCreateView(CreateView):

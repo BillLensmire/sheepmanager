@@ -51,13 +51,16 @@
                     </div>
                     <div class="col-md-6">
                         <p><strong>Birth Date:</strong> {{ sheep.date_of_birth|date:"F d, Y"|default:"Unknown" }}</p>
-                        <p><strong>Weight:</strong> {{ sheep.weight_current|default:"Not recorded" }} {% if sheep.weight %}kg{% endif %}</p>
+                        <p><strong>Weight:</strong> {{ sheep.weight_current|default:"Not recorded" }} {% if sheep.weight %}lb{% endif %}</p>
                         <p><strong>Acquisition Date:</strong> {{ sheep.date_acquired|date:"F d, Y"|default:"Not recorded" }}</p>
                         {% if sheep.mother %}
                         <p><strong>Dam:</strong> <a href="{% url 'sheep-detail' sheep.mother.id %}">{{ sheep.mother.tag_number }} - {{ sheep.mother.name }}</a></p>
                         {% endif %}
                         {% if sheep.father %}
                         <p><strong>Sire:</strong> <a href="{% url 'sheep-detail' sheep.father.id %}">{{ sheep.father.tag_number }} - {{ sheep.father.name }}</a></p>
+                        {% endif %}
+                        {% if sheep.birth_record %}
+                        <p><strong>Birth Record:</strong> <a href="{% url 'lambing-record-detail' sheep.birth_record.id %}">View Lambing Record</a></p>
                         {% endif %}
                     </div>
                 </div>

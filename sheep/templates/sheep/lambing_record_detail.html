@@ -70,12 +70,15 @@
         </div>
 
         <!-- Lambs Section -->
-        {% if lambs %}
         <div class="card mb-4">
-            <div class="card-header">
+            <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="card-title mb-0">Lambs Born</h5>
+                <a href="{% url 'sheep-create' %}?mother={{ lambing_record.ewe.id }}&birth_record={{ lambing_record.id }}&date_of_birth={{ lambing_record.date|date:'Y-m-d' }}" class="btn btn-sm btn-success">
+                    <i class="fas fa-plus me-1"></i>Add Lamb
+                </a>
             </div>
             <div class="card-body">
+                {% if lambs %}
                 <div class="table-responsive">
                     <table class="table table-hover">
                         <thead>
@@ -104,9 +107,11 @@
                         </tbody>
                     </table>
                 </div>
+                {% else %}
+                <p class="text-muted">No lambs have been recorded for this lambing event yet.</p>
+                {% endif %}
             </div>
         </div>
-        {% endif %}
     </div>
     
     <!-- Images Section -->
