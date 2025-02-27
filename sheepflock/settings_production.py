@@ -3,6 +3,7 @@ Production settings for the Sheep Manager application.
 """
 
 from .settings import *
+import os
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'default-key-replace-in-production')
@@ -41,5 +42,3 @@ X_FRAME_OPTIONS = 'DENY'
 STATIC_ROOT = '/var/www/sheepmanager/staticfiles'
 MEDIA_ROOT = '/var/www/sheepmanager/media'
 
-# Add missing import
-import os
