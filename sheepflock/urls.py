@@ -20,13 +20,17 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic import RedirectView
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import views as auth_views
 from .views import HomeView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('sheep/', include('sheep.urls')),
-    #path('', RedirectView.as_view(url='sheep/breeds/', permanent=False)),
     path('', HomeView.as_view(), name='home'),
+    
+    # Authentication URLs
+    path('login/', auth_views.LoginView.as_view(), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(template_name='registration/logged_out.html'), name='logout'),
 ]
 
 # Serve media files in development
