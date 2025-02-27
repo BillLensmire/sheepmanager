@@ -65,7 +65,12 @@
                                         <li><a class="dropdown-item" href="{% url 'admin:index' %}">Admin</a></li>
                                         <li><hr class="dropdown-divider"></li>
                                     {% endif %}
-                                    <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                                    <li>
+                                        <form method="post" action="{% url 'logout' %}" class="dropdown-item p-0">
+                                            {% csrf_token %}
+                                            <button type="submit" class="dropdown-item">Logout</button>
+                                        </form>
+                                    </li>
                                 </ul>
                             </li>
                         {% else %}
