@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Health Record Details | Sheep Manager{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1><i class="fas fa-heartbeat me-2"></i>{{ health_record.get_record_type_display }} for {{ health_record.sheep }}</h1>
+    </div>
+    <div class="col-md-4 text-end">
+        <div class="btn-group">
+            <a href="{% url 'health-record-update' health_record.pk %}" class="btn btn-warning">
+                <i class="fas fa-edit me-2"></i>Edit Record
+            </a>
+            &nbsp;&nbsp;&nbsp;
+            <a href="{% url 'health-record-delete' health_record.pk %}" class="btn btn-danger">
+                <i class="fas fa-trash me-2"></i>Delete Record
+            </a>
+            &nbsp;&nbsp;&nbsp;
+            <a href="{% url 'health-record-list' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Health Record Details</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <p class="mb-1"><strong>Date:</strong></p>
+                        <p>{{ health_record.date }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="mb-1"><strong>Record Type:</strong></p>
+                        <p>
+                            {% if health_record.record_type == 'VACCINATION' %}
+                                <span class="badge bg-success">{{ health_record.get_record_type_display }}</span>
+                            {% elif health_record.record_type == 'MEDICATION' %}
+                                <span class="badge bg-primary">{{ health_record.get_record_type_display }}</span>
+                            {% elif health_record.record_type == 'ILLNESS' %}
+                                <span class="badge bg-danger">{{ health_record.get_record_type_display }}</span>
+                            {% elif health_record.record_type == 'INJURY' %}
+                                <span class="badge bg-warning">{{ health_record.get_record_type_display }}</span>
+                            {% elif health_record.record_type == 'PARASITE_TREATMENT' %}
+                                <span class="badge bg-info">{{ health_record.get_record_type_display }}</span>
+                            {% elif health_record.record_type == 'HOOF_TRIM' %}
+                                <span class="badge bg-secondary">{{ health_record.get_record_type_display }}</span>
+                            {% elif health_record.record_type == 'SHEARING' %}
+                                <span class="badge bg-light text-dark">{{ health_record.get_record_type_display }}</span>
+                            {% else %}
+                                <span class="badge bg-dark">{{ health_record.get_record_type_display }}</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <p class="mb-1"><strong>Treatment:</strong></p>
+                        <p>{{ health_record.treatment|default:"None" }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="mb-1"><strong>Dosage:</strong></p>
+                        <p>{{ health_record.dosage|default:"N/A" }}</p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <p class="mb-1"><strong>Administered By:</strong></p>
+                        <p>{{ health_record.administered_by|default:"Not specified" }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="mb-1"><strong>Follow-up Required:</strong></p>
+                        <p>
+                            {% if health_record.requires_followup %}
+                                <span class="badge bg-warning">Yes - {{ health_record.followup_date }}</span>
+                            {% else %}
+                                <span class="badge bg-secondary">No</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+
+                {% if health_record.notes %}
+                <div class="row">
+                    <div class="col-12">
+                        <p class="mb-1"><strong>Notes:</strong></p>
+                        <p>{{ health_record.notes|linebreaks }}</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if health_record.image %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Image</h5>
+            </div>
+            <div class="card-body text-center">
+                <img src="{{ health_record.image.url }}" alt="Health Record Image" class="img-fluid rounded">
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Sheep Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">{{ health_record.sheep.tag_number }}</h5>
+                    <a href="{% url 'sheep-detail' health_record.sheep.pk %}" class="btn btn-sm btn-info">
+                        <i class="fas fa-eye"></i> View Sheep
+                    </a>
+                </div>
+                
+                {% if health_record.sheep.name %}
+                <p><strong>Name:</strong> {{ health_record.sheep.name }}</p>
+                {% endif %}
+                
+                <p><strong>Status:</strong> 
+                    <span class="badge {% if health_record.sheep.status == 'ACTIVE' %}bg-success{% elif health_record.sheep.status == 'SOLD' %}bg-primary{% elif health_record.sheep.status == 'DECEASED' %}bg-danger{% else %}bg-secondary{% endif %}">
+                        {{ health_record.sheep.get_status_display }}
+                    </span>
+                </p>
+                
+                {% if health_record.sheep.date_of_birth %}
+                <p><strong>Age:</strong> {{ health_record.sheep.age }}</p>
+                {% endif %}
+                
+                {% if health_record.sheep.breed %}
+                <p><strong>Breed:</strong> {{ health_record.sheep.breed }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Other Health Records</h5>
+            </div>
+            <div class="card-body">
+                {% with other_records=health_record.sheep.healthrecord_set.all|dictsortreversed:"date" %}
+                    {% if other_records.count > 1 %}
+                        <div class="list-group">
+                            {% for record in other_records|slice:":6" %}
+                                {% if record.pk != health_record.pk %}
+                                    <a href="{% url 'health-record-detail' record.pk %}" class="list-group-item list-group-item-action">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <h6 class="mb-1">{{ record.get_record_type_display }}</h6>
+                                            <small>{{ record.date|date:"M d, Y" }}</small>
+                                        </div>
+                                        <p class="mb-1">{{ record.treatment|truncatechars:50 }}</p>
+                                    </a>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        {% if other_records.count > 6 %}
+                            <div class="text-center mt-3">
+                                <a href="{% url 'sheep-detail' health_record.sheep.pk %}" class="btn btn-sm btn-outline-primary">
+                                    View All Records
+                                </a>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <p class="text-muted">No other health records for this sheep.</p>
+                    {% endif %}
+                {% endwith %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

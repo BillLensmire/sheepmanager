@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Delete Health Record | Sheep Manager{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h1><i class="fas fa-trash me-2"></i>Delete Health Record</h1>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header bg-danger text-white">
+        <h5 class="mb-0">Warning: This action cannot be undone</h5>
+    </div>
+    <div class="card-body">
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle me-2"></i> 
+            You are about to delete a health record. This action cannot be undone.
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Health Record Details</h5>
+                <dl class="row">
+                    <dt class="col-sm-3">Sheep:</dt>
+                    <dd class="col-sm-9">{{ health_record.sheep }}</dd>
+                    
+                    <dt class="col-sm-3">Record Type:</dt>
+                    <dd class="col-sm-9">{{ health_record.get_record_type_display }}</dd>
+                    
+                    <dt class="col-sm-3">Date:</dt>
+                    <dd class="col-sm-9">{{ health_record.date }}</dd>
+                    
+                    <dt class="col-sm-3">Treatment:</dt>
+                    <dd class="col-sm-9">{{ health_record.treatment|default:"None" }}</dd>
+                </dl>
+            </div>
+        </div>
+        
+        <form method="post">
+            {% csrf_token %}
+            <div class="d-flex justify-content-between">
+                <a href="{% url 'health-record-detail' health_record.pk %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i> Cancel
+                </a>
+                <button type="submit" class="btn btn-danger">
+                    <i class="fas fa-trash me-2"></i> Confirm Delete
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

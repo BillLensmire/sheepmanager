@@ -38,4 +38,11 @@ urlpatterns = [
     
     # Lambing Image URLs
     path('lambing/images/<int:pk>/delete/', views.LambingImageDeleteView.as_view(), name='lambing-delete-image'),
+    
+    # Health Record URLs
+    path('health/', views.HealthRecordListView.as_view(), name='health-record-list'),
+    path('health/new/', views.HealthRecordCreateView.as_view(), name='health-record-create'),
+    path('health/<int:pk>/', views.HealthRecordDetailView.as_view(), name='health-record-detail'),
+    path('health/<int:pk>/edit/', views.HealthRecordUpdateView.as_view(), name='health-record-update'),
+    path('health/<int:pk>/delete/', views.HealthRecordDeleteView.as_view(), name='health-record-delete'),
 ]

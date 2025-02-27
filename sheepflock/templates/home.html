@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 
-{% block title %}Welcome to You Flock Manager{% endblock %}
+{% block title %}Welcome to Flock Manager{% endblock %}
 
 {% block content %}
 <div class="row">
     <div class="col-md-12 text-center">
-        <h1 class="display-4">Welcome to You Flock Manager</h1>
+        <h1 class="display-4">Welcome to Flock Manager</h1>
         <p class="lead">Your complete solution for planning and managing your flock</p>
     </div>
 </div>
@@ -53,5 +53,16 @@
             </div>
         </div>
     </div>
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Health Records</h5>
+                    <p class="card-text">View and Enter Notes into the Health Records Log</p>
+                    <a href="{% url 'health-record-list' %}" class="btn btn-success">View Health Records</a>
+                </div>
+            </div>
+        </div>
 </div>
 {% endblock %}

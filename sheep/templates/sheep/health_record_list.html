@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Health Records | Sheep Manager{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1><i class="fas fa-heartbeat me-2"></i>Health Records</h1>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{% url 'health-record-create' %}" class="btn btn-success">
+            <i class="fas fa-plus me-2"></i>Add New Health Record
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="row mb-4">
+            <div class="col-md-4 mb-2">
+                <label for="recordTypeFilter" class="form-label">Record Type</label>
+                <select id="recordTypeFilter" class="form-select">
+                    <option value="">All Types</option>
+                    {% for key, value in record_types.items %}
+                        <option value="{{ key }}">{{ value }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4 mb-2">
+                <label for="sheepFilter" class="form-label">Sheep</label>
+                <input type="text" id="sheepFilter" class="form-control" placeholder="Tag or name">
+            </div>
+            <div class="col-md-4 mb-2">
+                <label for="dateFilter" class="form-label">Date Range</label>
+                <select id="dateFilter" class="form-select">
+                    <option value="">All Dates</option>
+                    <option value="30">Last 30 Days</option>
+                    <option value="90">Last 90 Days</option>
+                    <option value="365">Last Year</option>
+                </select>
+            </div>
+        </div>
+
+        {% if health_records %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Sheep</th>
+                            <th>Record Type</th>
+                            <th>Treatment</th>
+                            <th>Follow-up</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="healthRecordsTable">
+                        {% for record in health_records %}
+                        <tr class="record-row" 
+                            data-record-type="{{ record.record_type }}"
+                            data-sheep-tag="{{ record.sheep.tag_number }}"
+                            data-sheep-name="{{ record.sheep.name }}"
+                            data-date="{{ record.date|date:'Y-m-d' }}">
+                            <td>{{ record.date|date:"M d, Y" }}</td>
+                            <td>
+                                <a href="{% url 'sheep-detail' record.sheep.pk %}">
+                                    {{ record.sheep.tag_number }}
+                                    {% if record.sheep.name %}
+                                        ({{ record.sheep.name }})
+                                    {% endif %}
+                                </a>
+                            </td>
+                            <td>{{ record.get_record_type_display }}</td>
+                            <td>{{ record.treatment }}</td>
+                            <td>
+                                {% if record.requires_followup %}
+                                    <span class="badge bg-warning">
+                                        {{ record.followup_date|date:"M d, Y" }}
+                                    </span>
+                                {% else %}
+                                    <span class="text-muted">None</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="{% url 'health-record-detail' record.pk %}" class="btn btn-sm btn-info">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    &nbsp;&nbsp;&nbsp;
+                                    <a href="{% url 'health-record-update' record.pk %}" class="btn btn-sm btn-warning">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    &nbsp;&nbsp;&nbsp;
+                                    <a href="{% url 'health-record-delete' record.pk %}" class="btn btn-sm btn-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                No health records have been added yet. <a href="{% url 'health-record-create' %}">Add your first health record</a>.
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const recordTypeFilter = document.getElementById('recordTypeFilter');
+        const sheepFilter = document.getElementById('sheepFilter');
+        const dateFilter = document.getElementById('dateFilter');
+        
+        function filterTable() {
+            const recordType = recordTypeFilter.value.toUpperCase();
+            const sheepQuery = sheepFilter.value.toLowerCase();
+            const dateValue = dateFilter.value;
+            
+            const rows = document.querySelectorAll('#healthRecordsTable tr.record-row');
+            
+            rows.forEach(row => {
+                const rowRecordType = row.dataset.recordType;
+                const sheepTag = row.dataset.sheepTag.toLowerCase();
+                const sheepName = (row.dataset.sheepName || '').toLowerCase();
+                const recordDate = new Date(row.dataset.date);
+                
+                let showRow = true;
+                
+                if (recordType && rowRecordType !== recordType) {
+                    showRow = false;
+                }
+                
+                if (sheepQuery && !sheepTag.includes(sheepQuery) && !sheepName.includes(sheepQuery)) {
+                    showRow = false;
+                }
+                
+                if (dateValue) {
+                    const today = new Date();
+                    const daysDiff = Math.floor((today - recordDate) / (1000 * 60 * 60 * 24));
+                    if (daysDiff > parseInt(dateValue)) {
+                        showRow = false;
+                    }
+                }
+                
+                row.style.display = showRow ? '' : 'none';
+            });
+        }
+        
+        recordTypeFilter.addEventListener('change', filterTable);
+        sheepFilter.addEventListener('input', filterTable);
+        dateFilter.addEventListener('change', filterTable);
+    });
+</script>
+{% endblock %}

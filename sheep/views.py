@@ -4,8 +4,9 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView, D
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.utils import timezone
+from django.db import models
 
-from .models import Breed, Sheep, SheepImage, BreedingRecord, LambingRecord, LambingImage
+from .models import Breed, Sheep, SheepImage, BreedingRecord, LambingRecord, LambingImage, HealthRecord
 from django import forms
 
 # Create your views here.
@@ -106,19 +107,29 @@ class SheepDetailView(DetailView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Get related records
         sheep = self.get_object()
-        context['health_records'] = sheep.health_records.all().order_by('-date')[:5]
-        context['lambings'] = sheep.lambings.all().order_by('-date')[:5] if sheep.gender == 'F' else None
-        context['breeding_as_ram'] = sheep.breeding_as_ram.all().order_by('-date_started')[:5] if sheep.gender == 'M' else None
-        context['breeding_as_ewe'] = sheep.breeding_as_ewe.all().order_by('-date_started')[:5] if sheep.gender == 'F' else None
         
-        # Get offspring with their lambing records
-        offspring = Sheep.objects.filter(mother=sheep) | Sheep.objects.filter(father=sheep)
-        # Add lambing record information to each offspring
-        context['offspring_with_lambing'] = offspring.select_related('birth_record')
+        # Get offspring
+        context['offspring'] = Sheep.objects.filter(
+            models.Q(mother=sheep) | models.Q(father=sheep)
+        ).order_by('-date_of_birth')
         
-        context['breeding_records'] = BreedingRecord.objects.filter(ewe=sheep) | BreedingRecord.objects.filter(ram=sheep)
+        # Get breeding records
+        context['breeding_records'] = BreedingRecord.objects.filter(
+            models.Q(ewe=sheep) | models.Q(ram=sheep)
+        ).order_by('-date_started')
+        
+        # Get lambing records
+        if sheep.gender == 'F':
+            context['lambing_records'] = LambingRecord.objects.filter(
+                ewe=sheep
+            ).order_by('-date')
+        
+        # Get health records
+        context['health_records'] = HealthRecord.objects.filter(
+            sheep=sheep
+        ).order_by('-date')
+        
         return context
 
 class SheepCreateView(CreateView):
@@ -472,4 +483,69 @@ class LambingImageDeleteView(DeleteView):
     def delete(self, request, *args, **kwargs):
         image = self.get_object()
         messages.success(request, "Image deleted from lambing record successfully!")
+        return super().delete(request, *args, **kwargs)
+
+# HealthRecord Views
+class HealthRecordForm(forms.ModelForm):
+    class Meta:
+        model = HealthRecord
+        fields = ['sheep', 'date', 'record_type', 'treatment', 'dosage', 'administered_by', 
+                 'requires_followup', 'followup_date', 'notes']
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date'}),
+            'followup_date': forms.DateInput(attrs={'type': 'date'}),
+            'notes': forms.Textarea(attrs={'rows': 4}),
+        }
+
+class HealthRecordListView(ListView):
+    model = HealthRecord
+    template_name = 'sheep/health_record_list.html'
+    context_object_name = 'health_records'
+    ordering = ['-date']
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['record_types'] = dict(HealthRecord.TYPE_CHOICES)
+        return context
+
+class HealthRecordDetailView(DetailView):
+    model = HealthRecord
+    template_name = 'sheep/health_record_detail.html'
+    context_object_name = 'health_record'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
+class HealthRecordCreateView(CreateView):
+    model = HealthRecord
+    form_class = HealthRecordForm
+    template_name = 'sheep/health_record_form.html'
+    success_url = reverse_lazy('health-record-list')
+    
+    def form_valid(self, form):
+        messages.success(self.request, f"Health record for {form.instance.sheep} created successfully!")
+        return super().form_valid(form)
+
+class HealthRecordUpdateView(UpdateView):
+    model = HealthRecord
+    form_class = HealthRecordForm
+    template_name = 'sheep/health_record_form.html'
+    
+    def get_success_url(self):
+        return reverse_lazy('health-record-detail', kwargs={'pk': self.object.pk})
+    
+    def form_valid(self, form):
+        messages.success(self.request, f"Health record for {form.instance.sheep} updated successfully!")
+        return super().form_valid(form)
+
+class HealthRecordDeleteView(DeleteView):
+    model = HealthRecord
+    template_name = 'sheep/health_record_confirm_delete.html'
+    success_url = reverse_lazy('health-record-list')
+    context_object_name = 'health_record'
+    
+    def delete(self, request, *args, **kwargs):
+        health_record = self.get_object()
+        messages.success(request, f"Health record for {health_record.sheep} deleted successfully!")
         return super().delete(request, *args, **kwargs)
