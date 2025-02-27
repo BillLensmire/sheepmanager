@@ -1,0 +1,20 @@
+[Unit]
+Description=Gunicorn daemon for Sheep Manager Django Application
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/sheepmanager
+ExecStart=/var/www/sheepmanager/.venv/bin/gunicorn \
+          --config /var/www/sheepmanager/gunicorn_config.py \
+          sheepflock.wsgi:application
+ExecReload=/bin/kill -s HUP $MAINPID
+Restart=on-failure
+RestartSec=5s
+KillMode=mixed
+TimeoutStopSec=5
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
