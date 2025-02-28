@@ -39,14 +39,19 @@
             <div class="row mb-3">
                 <div class="col-md-6">
                     <h5>Sheep Selection</h5>
+                                    
                     
-                    <div class="mb-3">
-                        <label for="{{ form.ewe.id_for_label }}" class="form-label">Ewe *</label>
-                        {{ form.ewe }}
-                        {% if form.ewe.errors %}
-                            <div class="invalid-feedback d-block">{{ form.ewe.errors }}</div>
+                    <div class="form-group mb-3">
+                        <label for="{{ form.sheep.id_for_label }}" class="form-label">Ewe <span class="text-danger">*</span></label>
+                        {% if form.initial.ewe %}
+                            <input type="text" class="form-control" value="{{ form.initial.ewe }}" readonly>
+                            <input type="hidden" name="ewe" value="{{ form.initial.ewe.pk }}">
+                        {% else %}
+                            {{ form.ewe }}
                         {% endif %}
-                        <div class="form-text">Select the female sheep</div>
+                        {% if form.ewe.errors %}
+                            <div class="text-danger">{{ form.ewe.errors }}</div>
+                        {% endif %}
                     </div>
                     
                     <div class="mb-3">

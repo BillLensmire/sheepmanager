@@ -294,7 +294,6 @@ class BreedingRecordDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         breeding_record = self.get_object()
-        context['lambing_records'] = LambingRecord.objects.filter(breeding_record=breeding_record)
         return context
 
 class BreedingRecordCreateView(LoginRequiredMixin, CreateView):
@@ -307,10 +306,34 @@ class BreedingRecordCreateView(LoginRequiredMixin, CreateView):
         messages.success(self.request, f"Breeding record created successfully!")
         return super().form_valid(form)
 
+class EweBreedingRecordCreateView(LoginRequiredMixin, CreateView):
+    model = BreedingRecord
+    form_class = BreedingRecordForm
+    template_name = 'sheep/breeding_record_form.html'
+    success_url = reverse_lazy('breeding-record-list')
+    
+    def get_initial(self):
+        initial = super().get_initial()
+        ewe = get_object_or_404(Sheep, pk=self.kwargs['pk'])
+        initial['ewe'] = ewe
+        return initial
+    
+    def form_valid(self, form):
+        messages.success(self.request, f"Breeding record created successfully!")
+        return super().form_valid(form)
+        
+    def get_success_url(self):
+        return reverse_lazy('sheep-detail', kwargs={'pk': self.object.ewe.pk})
+
 class BreedingRecordUpdateView(LoginRequiredMixin, UpdateView):
     model = BreedingRecord
     form_class = BreedingRecordForm
     template_name = 'sheep/breeding_record_form.html'
+    
+    def get_initial(self):
+        initial = super().get_initial()
+        initial['ewe'] = self.object.ewe
+        return initial
     
     def get_success_url(self):
         return reverse_lazy('breeding-record-detail', kwargs={'pk': self.object.pk})
@@ -360,7 +383,7 @@ def duplicate_breeding_record(request, pk):
 class LambingRecordForm(forms.ModelForm):
     class Meta:
         model = LambingRecord
-        fields = ['breeding_record', 'ewe', 'date', 'assisted', 'complications', 
+        fields = ['ewe', 'date', 'assisted', 'complications', 
                  'total_born', 'born_alive', 'born_dead', 'primary_image', 'notes']
         widgets = {
             'date': forms.DateInput(attrs={'type': 'date'}),
@@ -372,16 +395,7 @@ class LambingRecordForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         # Filter ewe field to show only females
         self.fields['ewe'].queryset = Sheep.objects.filter(gender='F')
-        # Filter breeding records to show only those without lambing records
-        if not self.instance.pk:  # Only for new records
-            # Get breeding records that already have lambing records
-            existing_lambing_breeding_records = LambingRecord.objects.exclude(
-                pk=self.instance.pk if self.instance.pk else None
-            ).values_list('breeding_record', flat=True)
-            self.fields['breeding_record'].queryset = BreedingRecord.objects.exclude(
-                pk__in=existing_lambing_breeding_records
-            )
-
+        
 class LambingRecordListView(LoginRequiredMixin, ListView):
     model = LambingRecord
     template_name = 'sheep/lambing_record_list.html'
@@ -413,10 +427,34 @@ class LambingRecordCreateView(LoginRequiredMixin, CreateView):
         messages.success(self.request, f"Lambing record created successfully!")
         return super().form_valid(form)
 
+class EweLambingRecordCreateView(LoginRequiredMixin, CreateView):
+    model = LambingRecord
+    form_class = LambingRecordForm
+    template_name = 'sheep/lambing_record_form.html'
+    success_url = reverse_lazy('lambing-record-list')
+    
+    def get_initial(self):
+        initial = super().get_initial()
+        ewe = get_object_or_404(Sheep, pk=self.kwargs['pk'])
+        initial['ewe'] = ewe
+        return initial
+
+    def form_valid(self, form):
+        messages.success(self.request, f"Lambing record created successfully!")
+        return super().form_valid(form)
+        
+    def get_success_url(self):
+        return reverse_lazy('sheep-detail', kwargs={'pk': self.kwargs['pk']})
+
 class LambingRecordUpdateView(LoginRequiredMixin, UpdateView):
     model = LambingRecord
     form_class = LambingRecordForm
     template_name = 'sheep/lambing_record_form.html'
+    
+    def get_initial(self):
+        initial = super().get_initial()
+        initial['ewe'] = self.object.ewe
+        return initial
     
     def get_success_url(self):
         return reverse_lazy('lambing-record-detail', kwargs={'pk': self.object.pk})

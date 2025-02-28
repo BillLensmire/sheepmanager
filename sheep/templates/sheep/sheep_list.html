@@ -51,7 +51,7 @@
                     <tbody>
                         {% for sheep in sheep_list %}
                             <tr>
-                                <td>{{ sheep.tag_number }}</td>
+                                <td><a href="{% url 'sheep-detail' sheep.id %}">{{ sheep.tag_number }}</a></p></td>
                                 <td>{{ sheep.name|default:"-" }}</td>
                                 <td>{{ sheep.get_gender_display }}</td>
                                 <td>{{ sheep.breed.name }}</td>

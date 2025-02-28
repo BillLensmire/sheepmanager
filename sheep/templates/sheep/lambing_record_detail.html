@@ -38,9 +38,6 @@
                 <div class="row">
                     <div class="col-md-6">
                         <p><strong>Ewe:</strong> <a href="{% url 'sheep-detail' lambing_record.ewe.id %}">{{ lambing_record.ewe.tag_number }}{% if lambing_record.ewe.name %} ({{ lambing_record.ewe.name }}){% endif %}</a></p>
-                        {% if lambing_record.breeding_record %}
-                        <p><strong>Breeding Record:</strong> <a href="{% url 'breeding-record-detail' lambing_record.breeding_record.id %}">View Breeding Record</a></p>
-                        {% endif %}
                         <p><strong>Date:</strong> {{ lambing_record.date|date:"F d, Y" }}</p>
                     </div>
                     <div class="col-md-6">

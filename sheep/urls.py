@@ -28,6 +28,7 @@ urlpatterns = [
     path('breeding/<int:pk>/edit/', views.BreedingRecordUpdateView.as_view(), name='breeding-record-update'),
     path('breeding/<int:pk>/delete/', views.BreedingRecordDeleteView.as_view(), name='breeding-record-delete'),
     path('breeding/<int:pk>/duplicate/', views.duplicate_breeding_record, name='breeding-record-duplicate'),
+    path('sheep/<int:pk>/breeding-record/create/', views.EweBreedingRecordCreateView.as_view(), name='ewe-breeding-record-create'),
     
     # Lambing Record URLs
     path('lambing/', views.LambingRecordListView.as_view(), name='lambing-record-list'),
@@ -36,6 +37,7 @@ urlpatterns = [
     path('lambing/<int:pk>/edit/', views.LambingRecordUpdateView.as_view(), name='lambing-record-update'),
     path('lambing/<int:pk>/delete/', views.LambingRecordDeleteView.as_view(), name='lambing-record-delete'),
     path('lambing/<int:pk>/add-image/', views.LambingImageCreateView.as_view(), name='lambing-add-image'),
+    path('sheep/<int:pk>/lambing-record/create/', views.EweLambingRecordCreateView.as_view(), name='ewe-lambing-record-create'),
     
     # Lambing Image URLs
     path('lambing/images/<int:pk>/delete/', views.LambingImageDeleteView.as_view(), name='lambing-delete-image'),

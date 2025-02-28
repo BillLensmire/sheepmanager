@@ -205,8 +205,6 @@ class BreedingRecord(models.Model):
 
 class LambingRecord(models.Model):
     """Model representing a lambing event (birth of lambs)"""
-    breeding_record = models.OneToOneField(BreedingRecord, on_delete=models.CASCADE, related_name='lambing',
-                                         null=True, blank=True)
     ewe = models.ForeignKey(Sheep, on_delete=models.CASCADE, related_name='lambings',
                           limit_choices_to={'gender': 'F'})
     date = models.DateField()

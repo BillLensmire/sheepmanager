@@ -40,24 +40,19 @@
                 <div class="col-md-6">
                     <h5>Basic Information</h5>
                     
-                    <div class="mb-3">
-                        <label for="{{ form.ewe.id_for_label }}" class="form-label">Ewe *</label>
-                        {{ form.ewe }}
+                    <div class="form-group mb-3">
+                        <label for="{{ form.sheep.id_for_label }}" class="form-label">Ewe <span class="text-danger">*</span></label>
+                        {% if form.initial.ewe %}
+                            <input type="text" class="form-control" value="{{ form.initial.ewe }}" readonly>
+                            <input type="hidden" name="ewe" value="{{ form.initial.ewe.pk }}">
+                        {% else %}
+                            {{ form.ewe }}
+                        {% endif %}
                         {% if form.ewe.errors %}
-                            <div class="invalid-feedback d-block">{{ form.ewe.errors }}</div>
+                            <div class="text-danger">{{ form.ewe.errors }}</div>
                         {% endif %}
-                        <div class="form-text">Select the female sheep that gave birth</div>
                     </div>
-                    
-                    <div class="mb-3">
-                        <label for="{{ form.breeding_record.id_for_label }}" class="form-label">Breeding Record</label>
-                        {{ form.breeding_record }}
-                        {% if form.breeding_record.errors %}
-                            <div class="invalid-feedback d-block">{{ form.breeding_record.errors }}</div>
-                        {% endif %}
-                        <div class="form-text">Link to a breeding record (optional)</div>
-                    </div>
-                    
+                                        
                     <div class="mb-3">
                         <label for="{{ form.date.id_for_label }}" class="form-label">Date *</label>
                         {{ form.date }}
@@ -66,9 +61,6 @@
                         {% endif %}
                         <div class="form-text">Date when the lambing occurred</div>
                     </div>
-                </div>
-                
-                <div class="col-md-6">
                     <h5>Lambing Details</h5>
                     
                     <div class="mb-3">

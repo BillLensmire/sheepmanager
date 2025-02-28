@@ -65,41 +65,6 @@
                 {% endif %}
             </div>
         </div>
-
-        <!-- Lambing Record -->
-        {% if lambing_record %}
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5 class="card-title mb-0">Lambing Record</h5>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <p><strong>Date:</strong> {{ lambing_record.date|date:"F d, Y" }}</p>
-                        <p><strong>Total Born:</strong> {{ lambing_record.total_born }}</p>
-                        <p><strong>Born Alive:</strong> {{ lambing_record.born_alive }}</p>
-                    </div>
-                    <div class="col-md-6">
-                        <p><strong>Assisted:</strong> {% if lambing_record.assisted %}Yes{% else %}No{% endif %}</p>
-                        {% if lambing_record.complications %}
-                        <p><strong>Complications:</strong> {{ lambing_record.complications }}</p>
-                        {% endif %}
-                    </div>
-                </div>
-                {% if lambing_record.notes %}
-                <div class="row mt-3">
-                    <div class="col-12">
-                        <h6>Notes:</h6>
-                        <p>{{ lambing_record.notes|linebreaks }}</p>
-                    </div>
-                </div>
-                {% endif %}
-                <div class="mt-3">
-                    <a href="#" class="btn btn-sm btn-info">View Full Lambing Record</a>
-                </div>
-            </div>
-        </div>
-        {% endif %}
     </div>
 
     <!-- Sidebar -->

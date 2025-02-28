@@ -55,19 +55,13 @@ class SheepAdmin(admin.ModelAdmin):
     inlines = [SheepImageInline]
 
 
-class LambingInline(admin.TabularInline):
-    model = LambingRecord
-    extra = 0
-    fields = ('date', 'total_born', 'born_alive', 'born_dead', 'assisted')
-
-
 @admin.register(BreedingRecord)
 class BreedingRecordAdmin(admin.ModelAdmin):
     list_display = ('ewe', 'ram', 'date_started', 'status', 'expected_lambing_date')
     list_filter = ('status',)
     search_fields = ('ewe__tag_number', 'ewe__name', 'ram__tag_number', 'ram__name')
     autocomplete_fields = ['ewe', 'ram']
-    inlines = [LambingInline]
+
 
 
 @admin.register(LambingRecord)
@@ -75,10 +69,10 @@ class LambingRecordAdmin(admin.ModelAdmin):
     list_display = ('ewe', 'date', 'total_born', 'born_alive', 'born_dead', 'assisted')
     list_filter = ('assisted',)
     search_fields = ('ewe__tag_number', 'ewe__name')
-    autocomplete_fields = ['ewe', 'breeding_record']
+    autocomplete_fields = ['ewe']
     fieldsets = (
         (None, {
-            'fields': ('breeding_record', 'ewe', 'date')
+            'fields': ('ewe', 'date')
         }),
         ('Lambing Details', {
             'fields': ('assisted', 'complications', 'total_born', 'born_alive', 'born_dead')
