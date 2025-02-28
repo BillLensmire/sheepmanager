@@ -13,7 +13,11 @@
             {% if form.instance.id %}
                 Edit Sheep {{ form.instance.tag_number }}
             {% else %}
-                Add New Sheep
+                {% if form.initial.formtitle %}
+                    {{ form.initial.formtitle }}
+                {% else %}
+                    Add New Sheep
+                {% endif %}
             {% endif %}
         </h1>
     </div>

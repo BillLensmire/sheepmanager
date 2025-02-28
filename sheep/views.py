@@ -127,6 +127,8 @@ class SheepDetailView(LoginRequiredMixin, DetailView):
             context['lambing_records'] = None
         
         # Get health records
+        context['offspring_with_lambing'] = Sheep.objects.filter(
+                models.Q(mother=sheep) | models.Q(father=sheep)).order_by('-date_of_birth')
         context['health_records'] = HealthRecord.objects.filter(sheep=sheep).order_by('-date')
         
         # Get images
@@ -142,6 +144,12 @@ class SheepCreateView(LoginRequiredMixin, CreateView):
     
     def get_initial(self):
         initial = super().get_initial()
+        formtitle = self.request.GET.get('formtitle')
+        if formtitle:
+            initial['formtitle'] = formtitle
+        mother_id = self.request.GET.get('mother')
+        if mother_id:
+            initial['mother'] = Sheep.objects.get(pk=mother_id)
         # If coming from a lambing record, pre-fill some fields
         lambing_id = self.request.GET.get('lambing_id')
         if lambing_id:
@@ -190,6 +198,13 @@ class SheepDeleteView(LoginRequiredMixin, DeleteView):
         sheep = self.get_object()
         messages.success(request, f"Sheep '{sheep.tag_number}' deleted successfully!")
         return super().delete(request, *args, **kwargs)
+        
+    def get_success_url(self):
+        # If next parameter is provided, redirect there
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return next_url
+        return super().get_success_url()
 
 # Sheep Image Form
 class SheepImageForm(forms.ModelForm):
@@ -323,6 +338,10 @@ class EweBreedingRecordCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
         
     def get_success_url(self):
+        # If next parameter is provided, redirect there
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return next_url
         return reverse_lazy('sheep-detail', kwargs={'pk': self.object.ewe.pk})
 
 class BreedingRecordUpdateView(LoginRequiredMixin, UpdateView):
@@ -352,6 +371,13 @@ class BreedingRecordDeleteView(LoginRequiredMixin, DeleteView):
         breeding_record = self.get_object()
         messages.success(request, f"Breeding record deleted successfully!")
         return super().delete(request, *args, **kwargs)
+    
+    def get_success_url(self):
+        # If next parameter is provided, redirect there
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return next_url
+        return reverse_lazy('breeding-record-detail', kwargs={'pk': self.object.pk})
 
 # Duplicate Breeding Record function
 @login_required
@@ -444,6 +470,10 @@ class EweLambingRecordCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
         
     def get_success_url(self):
+        # If next parameter is provided, redirect there
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return next_url
         return reverse_lazy('sheep-detail', kwargs={'pk': self.kwargs['pk']})
 
 class LambingRecordUpdateView(LoginRequiredMixin, UpdateView):
@@ -473,6 +503,13 @@ class LambingRecordDeleteView(LoginRequiredMixin, DeleteView):
         lambing_record = self.get_object()
         messages.success(request, f"Lambing record deleted successfully!")
         return super().delete(request, *args, **kwargs)
+    
+    def get_success_url(self):
+        # If next parameter is provided, redirect there
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return next_url
+        return reverse_lazy('sheep-detail', kwargs={'pk': self.object.ewe.pk})
 
 # LambingImage Form
 class LambingImageForm(forms.ModelForm):
@@ -603,6 +640,13 @@ class HealthRecordDeleteView(LoginRequiredMixin, DeleteView):
         health_record = self.get_object()
         messages.success(request, f"Health record deleted successfully!")
         return super().delete(request, *args, **kwargs)
+    
+    def get_success_url(self):
+        # If next parameter is provided, redirect there
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return next_url
+        return reverse_lazy('health-record-detail', kwargs={'pk': self.object.pk})
 
 class EweHealthRecordCreateView(LoginRequiredMixin, CreateView):
     model = HealthRecord
@@ -616,4 +660,8 @@ class EweHealthRecordCreateView(LoginRequiredMixin, CreateView):
         return initial
 
     def get_success_url(self):
+        # If next parameter is provided, redirect there
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return next_url
         return reverse_lazy('sheep-detail', kwargs={'pk': self.kwargs['pk']})
