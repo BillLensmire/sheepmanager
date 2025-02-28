@@ -543,6 +543,11 @@ class HealthRecordUpdateView(LoginRequiredMixin, UpdateView):
     form_class = HealthRecordForm
     template_name = 'sheep/health_record_form.html'
     
+    def get_initial(self):
+        initial = super().get_initial()
+        initial['sheep'] = self.object.sheep
+        return initial
+    
     def get_success_url(self):
         return reverse_lazy('health-record-detail', kwargs={'pk': self.object.pk})
     
@@ -560,3 +565,17 @@ class HealthRecordDeleteView(LoginRequiredMixin, DeleteView):
         health_record = self.get_object()
         messages.success(request, f"Health record deleted successfully!")
         return super().delete(request, *args, **kwargs)
+
+class EweHealthRecordCreateView(LoginRequiredMixin, CreateView):
+    model = HealthRecord
+    form_class = HealthRecordForm
+    template_name = 'sheep/health_record_form.html'
+    
+    def get_initial(self):
+        initial = super().get_initial()
+        ewe = get_object_or_404(Sheep, pk=self.kwargs['pk'])
+        initial['sheep'] = ewe
+        return initial
+
+    def get_success_url(self):
+        return reverse_lazy('sheep-detail', kwargs={'pk': self.kwargs['pk']})

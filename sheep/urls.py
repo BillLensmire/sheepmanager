@@ -16,6 +16,7 @@ urlpatterns = [
     path('sheep/<int:pk>/edit/', views.SheepUpdateView.as_view(), name='sheep-update'),
     path('sheep/<int:pk>/delete/', views.SheepDeleteView.as_view(), name='sheep-delete'),
     path('sheep/<int:pk>/add-image/', views.SheepImageCreateView.as_view(), name='sheep-add-image'),
+    path('sheep/<int:pk>/add-health-record/', views.EweHealthRecordCreateView.as_view(), name='ewe-add-health-record'),
     
     # Sheep Image URLs
     path('sheep/images/<int:pk>/delete/', views.SheepImageDeleteView.as_view(), name='sheep-delete-image'),
@@ -45,4 +46,6 @@ urlpatterns = [
     path('health/<int:pk>/', views.HealthRecordDetailView.as_view(), name='health-record-detail'),
     path('health/<int:pk>/edit/', views.HealthRecordUpdateView.as_view(), name='health-record-update'),
     path('health/<int:pk>/delete/', views.HealthRecordDeleteView.as_view(), name='health-record-delete'),
+    path('sheep/<int:pk>/health-record/create/', views.EweHealthRecordCreateView.as_view(), name='ewe-health-record-create'),
+    path('sheep/health/<int:pk>/edit/', views.HealthRecordUpdateView.as_view(), name='health-record-update'),
 ]
