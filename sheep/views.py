@@ -186,6 +186,7 @@ class SheepUpdateView(LoginRequiredMixin, UpdateView):
     model = Sheep
     form_class = SheepForm
     template_name = 'sheep/sheep_form.html'
+    success_url = reverse_lazy('sheep-list')
     
     def get_success_url(self):
         return reverse_lazy('sheep-detail', kwargs={'pk': self.object.pk})
