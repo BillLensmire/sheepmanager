@@ -40,21 +40,8 @@
                         <p><strong>Tag Number:</strong> {{ sheep.tag_number }}</p>
                         <p><strong>Name:</strong> {{ sheep.name|default:"Not specified" }}</p>
                         <p><strong>Gender:</strong> {{ sheep.get_gender_display }}</p>
-                        <p><strong>Breed:</strong> <a href="{% url 'breed-detail' sheep.breed.id %}">{{ sheep.breed.name }}</a></p>
-                        <p><strong>Status:</strong> 
-                            <span class="badge {% if sheep.status == 'ACTIVE' %}bg-success
-                                           {% elif sheep.status == 'SOLD' %}bg-primary
-                                           {% elif sheep.status == 'DECEASED' %}bg-danger
-                                           {% elif sheep.status == 'CULLED' %}bg-warning
-                                           {% else %}bg-secondary{% endif %}">
-                                {{ sheep.get_status_display }}
-                            </span>
-                        </p>
-                    </div>
-                    <div class="col-md-6">
                         <p><strong>Birth Date:</strong> {{ sheep.date_of_birth|date:"F d, Y"|default:"Unknown" }}</p>
-                        <p><strong>Weight:</strong> {{ sheep.weight_current|default:"Not recorded" }} {% if sheep.weight %}lb{% endif %}</p>
-                        <p><strong>Acquisition Date:</strong> {{ sheep.date_acquired|date:"F d, Y"|default:"Not recorded" }}</p>
+                        <p><strong>Breed:</strong> <a href="{% url 'breed-detail' sheep.breed.id %}">{{ sheep.breed.name }}</a></p>
                         {% if sheep.mother %}
                         <p><strong>Dam:</strong> <a href="{% url 'sheep-detail' sheep.mother.id %}">{{ sheep.mother.tag_number }} - {{ sheep.mother.name }}</a></p>
                         {% endif %}
@@ -64,13 +51,64 @@
                         {% if sheep.birth_record %}
                         <p><strong>Birth Record:</strong> <a href="{% url 'lambing-record-detail' sheep.birth_record.id %}">View Lambing Record</a></p>
                         {% endif %}
+                        {% if sheep.bottle_lamb %}
+                        <p><strong>Bottle Lamb:</strong> <span class="badge bg-info">Yes</span></p>
+                        {% endif %}
+                        {% if sheep.bottle_lamb %}
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <p><strong>Bottle Notes:</strong> {{ sheep.bottle_lamb_reason }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
                     </div>
-                </div>
+                    <div class="col-md-6">
+                        <p><strong>Body Type:</strong> {{ sheep.get_body_type_display }}</p>
+                        <p><strong>Udder Type:</strong> {{ sheep.get_udder_type_display }}</p>
+                        <p><strong>Feet Type:</strong> {{ sheep.get_feet_type_display }}</p>
+                        <p><strong>Weight:</strong> {{ sheep.weight_current|default:"Not recorded" }} {% if sheep.weight %}lb{% endif %}</p>
+                        <p><strong>Acquisition Date:</strong> {{ sheep.date_acquired|date:"F d, Y"|default:"Not recorded" }}</p>
+                        {% if sheep.acquisition_date %}
+                        <p><strong>Acquisition Source:</strong> {{ sheep.acquisition_source|default:"Not recorded" }}</p>
+                        <p><strong>Acquisition Price:</strong> {{ sheep.acquisition_price|default:"Not recorded" }} {% if sheep.acquisition_price %}USD{% endif %}</p>
+                        <p><strong>Acquisition Notes:</strong> {{ sheep.acquisition_notes|default:"Not recorded" }}</p>
+                        {% endif %}
+                        <p><strong>Removal Date:</strong> {{ sheep.date_released|date:"F d, Y"|default:"Not recorded" }}</p>
+                        {% if sheep.removal_date %}
+                        <p><strong>Removal Reason:</strong> {{ sheep.removal_reason|default:"Not recorded" }}</p>
+                        {% endif %}
+                        <p><strong>Status:</strong> 
+                            <span class="badge {% if sheep.status == 'ACTIVE' %}bg-success
+                                           {% elif sheep.status == 'SOLD' %}bg-primary
+                                           {% elif sheep.status == 'DECEASED' %}bg-danger
+                                           {% elif sheep.status == 'CULLED' %}bg-warning
+                                           {% else %}bg-secondary{% endif %}">
+                                {{ sheep.get_status_display }}
+                            </span>
+                        </p>
+                        {% if sheep.cull_candidate %}
+                        <p><strong>Cull Candidate:</strong> <span class="badge bg-warning">Yes</span></p>
+                        {% endif %}
+                        <!-- Cull Information (if applicable) -->
+                        {% if sheep.cull_candidate or sheep.cull_date or sheep.cull_reason %}
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                {% if sheep.cull_date %}
+                                <p><strong>Cull Date:</strong> {{ sheep.cull_date|date:"F d, Y" }}</p>
+                                {% endif %}
+                                {% if sheep.cull_reason %}
+                                <p><strong>Cull Reason:</strong> {{ sheep.cull_reason }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>                
+                
                 {% if sheep.notes %}
                 <div class="row mt-3">
                     <div class="col-12">
-                        <h6>Notes:</h6>
-                        <p>{{ sheep.notes|linebreaks }}</p>
+                        <p><strong>Notes:</strong> {{ sheep.notes }}</p>
                     </div>
                 </div>
                 {% endif %}

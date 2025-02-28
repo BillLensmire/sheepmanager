@@ -67,12 +67,16 @@ class SheepForm(forms.ModelForm):
     class Meta:
         model = Sheep
         fields = ['tag_number', 'name', 'gender', 'breed', 'mother', 'father', 'birth_record', 'weight_current', 'date_of_birth',
-        'date_acquired',
-                 'status', 'primary_image', 'notes']
+        'date_acquired', 'date_removed', 'removal_reason', 'status', 'primary_image', 'notes', 'cull_candidate', 'cull_date', 'cull_reason', 
+        'bottle_lamb', 'bottle_lamb_reason', 'body_type', 'udder_type', 'feet_type']
         widgets = {
             'date_acquired': forms.DateInput(attrs={'type': 'date'}),
             'date_of_birth': forms.DateInput(attrs={'type': 'date'}),
+            'date_removed': forms.DateInput(attrs={'type': 'date'}),
+            'cull_date': forms.DateInput(attrs={'type': 'date'}),
             'notes': forms.Textarea(attrs={'rows': 4}),
+            'cull_reason': forms.Textarea(attrs={'rows': 3}),
+            'bottle_lamb_reason': forms.Textarea(attrs={'rows': 3}),
         }
         
     def __init__(self, *args, **kwargs):

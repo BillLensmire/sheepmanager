@@ -111,6 +111,22 @@
                             <div class="invalid-feedback d-block">{{ form.date_acquired.errors }}</div>
                         {% endif %}
                     </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.date_removed.id_for_label }}" class="form-label">Removal Date</label>
+                        {{ form.date_removed }}
+                        {% if form.date_removed.errors %}
+                            <div class="invalid-feedback d-block">{{ form.date_removed.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.removal_reason.id_for_label }}" class="form-label">Removal Reason</label>
+                        {{ form.removal_reason }}
+                        {% if form.removal_reason.errors %}
+                            <div class="invalid-feedback d-block">{{ form.removal_reason.errors }}</div>
+                        {% endif %}
+                    </div>
                                         
                     <div class="mb-3">
                         <label for="{{ form.primary_image.id_for_label }}" class="form-label">Primary Image</label>
@@ -125,9 +141,7 @@
                         {% endif %}
                     </div>
                 </div>
-            </div>
-            
-            <div class="row mb-3">
+                
                 <div class="col-md-6">
                     <h5>Parentage</h5>
                     
@@ -148,19 +162,113 @@
                         {% endif %}
                         <div class="form-text">Male parent</div>
                     </div>
-                </div>
                 
-                <div class="col-md-6">
-                    <h5>Notes</h5>
-                    
                     <div class="mb-3">
-                        <label for="{{ form.notes.id_for_label }}" class="form-label">Notes</label>
-                        {{ form.notes }}
-                        {% if form.notes.errors %}
-                            <div class="invalid-feedback d-block">{{ form.notes.errors }}</div>
+                        <h5>Notes</h5>                        
+                        <div class="mb-">
+                            {{ form.notes }}
+                            {% if form.notes.errors %}
+                                <div class="invalid-feedback d-block">{{ form.notes.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Physical Characteristics Section -->
+            <div class="row mb-3">
+                <div class="col-12">
+                    <h5>Physical Characteristics</h5>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="{{ form.body_type.id_for_label }}" class="form-label">Body Type</label>
+                        {{ form.body_type }}
+                        {% if form.body_type.errors %}
+                            <div class="invalid-feedback d-block">{{ form.body_type.errors }}</div>
                         {% endif %}
                     </div>
                 </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="{{ form.udder_type.id_for_label }}" class="form-label">Udder Type</label>
+                        {{ form.udder_type }}
+                        {% if form.udder_type.errors %}
+                            <div class="invalid-feedback d-block">{{ form.udder_type.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="{{ form.feet_type.id_for_label }}" class="form-label">Feet Type</label>
+                        {{ form.feet_type }}
+                        {% if form.feet_type.errors %}
+                            <div class="invalid-feedback d-block">{{ form.feet_type.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Cull Information Section -->
+            <div class="col-md-6">
+                <h5>Cull Information</h5>
+                <div class="mb-3">
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="{{ form.cull_candidate.name }}" 
+                                   id="{{ form.cull_candidate.id_for_label }}" 
+                                   {% if form.cull_candidate.value %}checked{% endif %}>
+                            <label class="form-check-label" for="{{ form.cull_candidate.id_for_label }}">
+                                Cull Candidate
+                            </label>
+                            {% if form.cull_candidate.errors %}
+                                <div class="invalid-feedback d-block">{{ form.cull_candidate.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                
+                    <div class="mb-3">
+                        <label for="{{ form.cull_date.id_for_label }}" class="form-label">Cull Date</label>
+                        {{ form.cull_date }}
+                        {% if form.cull_date.errors %}
+                            <div class="invalid-feedback d-block">{{ form.cull_date.errors }}</div>
+                        {% endif %}
+                    </div>
+                
+                    <div class="mb-3">
+                        <label for="{{ form.cull_reason.id_for_label }}" class="form-label">Cull Reason</label>
+                        {{ form.cull_reason }}
+                        {% if form.cull_reason.errors %}
+                            <div class="invalid-feedback d-block">{{ form.cull_reason.errors }}</div>
+                        {% endif %}
+                    </div>
+                
+            </div>
+            
+            <!-- Bottle Lamb Information Section -->
+            <div class="col-md-6">
+                <h5>Bottle Lamb Information</h5>
+                
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="{{ form.bottle_lamb.name }}" 
+                           id="{{ form.bottle_lamb.id_for_label }}" 
+                           {% if form.bottle_lamb.value %}checked{% endif %}>
+                    <label class="form-check-label" for="{{ form.bottle_lamb.id_for_label }}">
+                        Bottle Lamb
+                    </label>
+                    {% if form.bottle_lamb.errors %}
+                        <div class="invalid-feedback d-block">{{ form.bottle_lamb.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-3">
+                    <label for="{{ form.bottle_lamb_reason.id_for_label }}" class="form-label">Bottle Lamb Reason</label>
+                    {{ form.bottle_lamb_reason }}
+                    {% if form.bottle_lamb_reason.errors %}
+                        <div class="invalid-feedback d-block">{{ form.bottle_lamb_reason.errors }}</div>
+                    {% endif %}
+                    </div>
+                
             </div>
             
             <div class="d-grid gap-2 d-md-flex justify-content-md-end">

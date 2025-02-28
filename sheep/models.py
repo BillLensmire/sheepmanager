@@ -51,6 +51,29 @@ class Sheep(models.Model):
         ('CULLED', 'Culled'),
         ('HARVESTED', 'Harvested')
     ]
+
+    UDDER_CHOICES = [
+        ('GOOD', 'Good'),
+        ('FAIR', 'Fair'),
+        ('POOR', 'Poor'),
+        ('POOR MILKER', 'Poor Milker'),
+        ('GOOD MILKER', 'Good Milker')
+    ]
+
+    FEET_CHOICES = [
+        ('GOOD', 'Good'),
+        ('FAIR', 'Fair'),
+        ('POOR', 'Poor'),
+    ]
+
+    BODY_CHOICES = [
+        ('GOOD', 'Good'),
+        ('FAIR', 'Fair'),
+        ('POOR', 'Poor'),
+        ('THIN', 'Thin'),
+        ('SLOW GROWTH', 'Slow Growth'),
+        ('FAST GROWTH', 'Fast Growth')
+    ]
     
     # Identification
     tag_number = models.CharField(max_length=50, unique=True)
@@ -79,9 +102,21 @@ class Sheep(models.Model):
     
     # Status
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='ACTIVE')
-    date_acquired = models.DateField(default=timezone.now)
+    date_acquired = models.DateField(null=True, blank=True)
     date_removed = models.DateField(null=True, blank=True)
     removal_reason = models.TextField(blank=True)
+
+    cull_candidate = models.BooleanField(default=False)
+    cull_date = models.DateField(null=True, blank=True)
+    cull_reason = models.TextField(blank=True)
+
+    bottle_lamb = models.BooleanField(default=False)
+    bottle_lamb_reason = models.TextField(blank=True)
+
+    # Physical characteristics
+    body_type = models.CharField(max_length=20, choices=BODY_CHOICES, default='GOOD')
+    udder_type = models.CharField(max_length=20, choices=UDDER_CHOICES, default='GOOD')
+    feet_type = models.CharField(max_length=20, choices=FEET_CHOICES, default='GOOD')
     
     # Notes
     notes = models.TextField(blank=True)
