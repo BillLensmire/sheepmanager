@@ -50,6 +50,12 @@ class BreedUpdateView(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         messages.success(self.request, f"Breed '{form.instance.name}' updated successfully!")
         return super().form_valid(form)
+    
+    def get_success_url(self):
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return next_url
+        return reverse_lazy('breed-detail', kwargs={'pk': self.object.id})
 
 class BreedDeleteView(LoginRequiredMixin, DeleteView):
     model = Breed
@@ -187,6 +193,13 @@ class SheepUpdateView(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         messages.success(self.request, f"Sheep '{form.instance.tag_number}' updated successfully!")
         return super().form_valid(form)
+        
+    def get_success_url(self):
+        # If next parameter is provided, redirect there
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return next_url
+        return super().get_success_url()
 
 class SheepDeleteView(LoginRequiredMixin, DeleteView):
     model = Sheep
@@ -355,6 +368,10 @@ class BreedingRecordUpdateView(LoginRequiredMixin, UpdateView):
         return initial
     
     def get_success_url(self):
+        # If next parameter is provided, redirect there
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return next_url
         return reverse_lazy('breeding-record-detail', kwargs={'pk': self.object.pk})
     
     def form_valid(self, form):
@@ -487,6 +504,10 @@ class LambingRecordUpdateView(LoginRequiredMixin, UpdateView):
         return initial
     
     def get_success_url(self):
+        # If next parameter is provided, redirect there
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return next_url
         return reverse_lazy('lambing-record-detail', kwargs={'pk': self.object.pk})
     
     def form_valid(self, form):
@@ -624,6 +645,10 @@ class HealthRecordUpdateView(LoginRequiredMixin, UpdateView):
         return initial
     
     def get_success_url(self):
+        # If next parameter is provided, redirect there
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return next_url
         return reverse_lazy('health-record-detail', kwargs={'pk': self.object.pk})
     
     def form_valid(self, form):
