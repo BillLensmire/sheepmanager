@@ -54,14 +54,6 @@
                     </div>
                     
                     <div class="mb-3">
-                        <label for="{{ form.name.id_for_label }}" class="form-label">Name</label>
-                        {{ form.name }}
-                        {% if form.name.errors %}
-                            <div class="invalid-feedback d-block">{{ form.name.errors }}</div>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="mb-3">
                         <label for="{{ form.gender.id_for_label }}" class="form-label">Gender *</label>
                         {{ form.gender }}
                         {% if form.gender.errors %}
@@ -79,6 +71,19 @@
                             <a href="{% url 'breed-create' %}" target="_blank">Add a new breed</a>
                         </div>
                     </div>
+                                        
+                    <div class="mb-3">
+                        <label for="{{ form.primary_image.id_for_label }}" class="form-label">Primary Image</label>
+                        {{ form.primary_image }}
+                        {% if form.primary_image.errors %}
+                            <div class="invalid-feedback d-block">{{ form.primary_image.errors }}</div>
+                        {% endif %}
+                        {% if form.instance.primary_image %}
+                            <div class="mt-2">
+                                <img src="{{ form.instance.primary_image.url }}" alt="Current image" class="img-thumbnail" style="max-height: 100px;">
+                            </div>
+                        {% endif %}
+                    </div>
                     
                     <div class="mb-3">
                         <label for="{{ form.status.id_for_label }}" class="form-label">Status *</label>
@@ -92,6 +97,13 @@
                 <div class="col-md-6">
                     <h5>Additional Details</h5> 
                     
+                    <div class="mb-3">
+                        <label for="{{ form.name.id_for_label }}" class="form-label">Name</label>
+                        {{ form.name }}
+                        {% if form.name.errors %}
+                            <div class="invalid-feedback d-block">{{ form.name.errors }}</div>
+                        {% endif %}
+                    </div>
                     <div class="mb-3">
                         <label for="{{ form.date_of_birth.id_for_label }}" class="form-label">Birth Date</label>
                         {{ form.date_of_birth }}
@@ -129,19 +141,6 @@
                         {{ form.removal_reason }}
                         {% if form.removal_reason.errors %}
                             <div class="invalid-feedback d-block">{{ form.removal_reason.errors }}</div>
-                        {% endif %}
-                    </div>
-                                        
-                    <div class="mb-3">
-                        <label for="{{ form.primary_image.id_for_label }}" class="form-label">Primary Image</label>
-                        {{ form.primary_image }}
-                        {% if form.primary_image.errors %}
-                            <div class="invalid-feedback d-block">{{ form.primary_image.errors }}</div>
-                        {% endif %}
-                        {% if form.instance.primary_image %}
-                            <div class="mt-2">
-                                <img src="{{ form.instance.primary_image.url }}" alt="Current image" class="img-thumbnail" style="max-height: 100px;">
-                            </div>
                         {% endif %}
                     </div>
                 </div>
