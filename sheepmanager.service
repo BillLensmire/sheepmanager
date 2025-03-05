@@ -6,9 +6,7 @@ After=network.target
 User=www-data
 Group=www-data
 WorkingDirectory=/var/www/sheepmanager
-ExecStart=/var/www/sheepmanager/.venv/bin/gunicorn \
-          --config /var/www/sheepmanager/gunicorn_config.py \
-          sheepflock.wsgi:application
+ExecStart=/var/www/sheepmanager/.venv/bin/gunicorn --config /var/www/sheepmanager/gunicorn_config.py sheepflock.wsgi:application
 ExecReload=/bin/kill -s HUP $MAINPID
 Restart=on-failure
 RestartSec=5s

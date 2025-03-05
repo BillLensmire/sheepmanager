@@ -80,16 +80,17 @@ class SheepForm(forms.ModelForm):
             'date_of_birth': forms.DateInput(attrs={'type': 'date'}),
             'date_removed': forms.DateInput(attrs={'type': 'date'}),
             'cull_date': forms.DateInput(attrs={'type': 'date'}),
-            'notes': forms.Textarea(attrs={'rows': 4}),
+            'notes': forms.Textarea(attrs={'rows': 3}),
             'cull_reason': forms.Textarea(attrs={'rows': 3}),
             'bottle_lamb_reason': forms.Textarea(attrs={'rows': 3}),
+            'removal_reason': forms.Textarea(attrs={'rows': 3})
         }
         
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Filter mother and father fields to show only appropriate gender
-        self.fields['mother'].queryset = Sheep.objects.filter(gender='F')
-        self.fields['father'].queryset = Sheep.objects.filter(gender='M')
+        self.fields['mother'].queryset = Sheep.objects.filter(gender='F').order_by('tag_number')
+        self.fields['father'].queryset = Sheep.objects.filter(gender='M').order_by('tag_number')
 
 class SheepListView(LoginRequiredMixin, ListView):
     model = Sheep

@@ -3,7 +3,7 @@ Gunicorn configuration file for the Sheep Manager application
 """
 
 # The socket to bind
-bind = "unix:/run/gunicorn/sheepmanager.sock"
+bind = "0.0.0.0:8000"
 
 # Number of worker processes
 workers = 3
