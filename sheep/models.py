@@ -120,6 +120,8 @@ class Sheep(models.Model):
     
     # Notes
     notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(default=timezone.now)
     
     class Meta:
         verbose_name_plural = "sheep"

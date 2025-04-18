@@ -103,12 +103,25 @@ class SheepListView(LoginRequiredMixin, ListView):
         status_filter = self.request.GET.get('status')
         if status_filter:
             queryset = queryset.filter(status=status_filter)
+        sort_param = self.request.GET.get('sort')
+        if sort_param in ['tag_number', '-tag_number', 'created_at', '-created_at']:
+            queryset = queryset.order_by(sort_param)
         return queryset
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['status_choices'] = Sheep.STATUS_CHOICES
-        context['selected_status'] = self.request.GET.get('status', '')
+        context['current_status'] = self.request.GET.get('status', '')
+        sort_param = self.request.GET.get('sort', '')
+        if sort_param.startswith('-'):
+            context['current_sort'] = sort_param[1:]
+            context['current_sort_dir'] = 'desc'
+        elif sort_param:
+            context['current_sort'] = sort_param
+            context['current_sort_dir'] = 'asc'
+        else:
+            context['current_sort'] = 'tag_number'
+            context['current_sort_dir'] = 'asc'
         return context
 
 class SheepDetailView(LoginRequiredMixin, DetailView):
@@ -313,7 +326,7 @@ class BreedingRecordListView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['status_choices'] = BreedingRecord.STATUS_CHOICES
-        context['selected_status'] = self.request.GET.get('status', '')
+        context['current_status'] = self.request.GET.get('status', '')
         return context
 
 class BreedingRecordDetailView(LoginRequiredMixin, DetailView):
