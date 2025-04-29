@@ -234,6 +234,68 @@ class SheepDeleteView(LoginRequiredMixin, DeleteView):
             return next_url
         return super().get_success_url()
 
+# New View: List sheep grouped by birth year
+class SheepBirthYearListView(LoginRequiredMixin, ListView):
+    model = Sheep
+    template_name = 'sheep/sheep_birthyear_list.html'
+    context_object_name = 'sheep_list'
+
+    def get_queryset(self):
+        # We'll handle filtering in get_context_data for more flexibility
+        # Just return all sheep with birth dates
+        return Sheep.objects.exclude(date_of_birth__isnull=True).order_by('-date_of_birth')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Get all unique years from sheep birth dates
+        all_years = Sheep.objects.exclude(date_of_birth__isnull=True).dates('date_of_birth', 'year')
+        context['available_years'] = sorted([date.year for date in all_years], reverse=True)
+        
+        # Get the selected year (if any)
+        selected_year = self.request.GET.get('year')
+        
+        if selected_year and selected_year.isdigit():
+            # User has selected a specific year
+            selected_year = int(selected_year)
+            context['selected_year'] = selected_year
+            
+            # Filter sheep for the selected year
+            filtered_sheep = []
+            for sheep in context['sheep_list']:
+                if sheep.date_of_birth and sheep.date_of_birth.year == selected_year:
+                    filtered_sheep.append(sheep)
+            
+            context['filtered_sheep'] = filtered_sheep
+            context['year_groups'] = None  # No need for groups when filtering by year
+        else:
+            # User is viewing all years - group sheep by birth year
+            context['selected_year'] = None
+            year_groups = []
+            
+            # Group sheep by birth year
+            sheep_by_year = {}
+            for sheep in context['sheep_list']:
+                if sheep.date_of_birth:
+                    year = sheep.date_of_birth.year
+                    if year not in sheep_by_year:
+                        sheep_by_year[year] = []
+                    sheep_by_year[year].append(sheep)
+            
+            # Convert to list of (year, sheep_list) tuples and sort by year (descending)
+            for year in sorted(sheep_by_year.keys(), reverse=True):
+                sheep_count = len(sheep_by_year[year])
+                year_groups.append({
+                    'year': year,
+                    'sheep_list': sheep_by_year[year],
+                    'count': sheep_count
+                })
+            
+            context['year_groups'] = year_groups
+            context['filtered_sheep'] = None
+        
+        return context
+
 # Sheep Image Form
 class SheepImageForm(forms.ModelForm):
     class Meta:

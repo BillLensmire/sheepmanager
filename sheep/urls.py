@@ -50,4 +50,7 @@ urlpatterns = [
     path('sheep/<int:pk>/health-record/create/', views.EweHealthRecordCreateView.as_view(), name='ewe-health-record-create'),
     path('sheep/health/<int:pk>/edit/', views.HealthRecordUpdateView.as_view(), name='health-record-update'),
     path('sheep/<int:pk>/add-health-record/', views.EweHealthRecordCreateView.as_view(), name='ewe-add-health-record'),
+    
+    # Sheep birth year list URL
+    path('sheep/by-birth-year/', views.SheepBirthYearListView.as_view(), name='sheep-by-birth-year'),
 ]

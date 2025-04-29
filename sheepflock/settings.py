@@ -83,9 +83,13 @@ DATABASES = {
     'main': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'sheepmanager.sqlite3',
+    },
+    'production': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'production.db.sqlite3',
     }
 }
-DATABASES['default'] = DATABASES['dev']
+DATABASES['default'] = DATABASES['production']
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

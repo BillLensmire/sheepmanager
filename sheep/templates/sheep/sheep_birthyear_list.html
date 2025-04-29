@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+
+{% block title %}Sheep by Birth Year | Sheep Manager{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1><i class="fas fa-sheep me-2"></i>Sheep by Birth Year</h1>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{% url 'sheep-create' %}" class="btn btn-success">
+            <i class="fas fa-plus me-2"></i>Add New Sheep
+        </a>
+    </div>
+</div>
+
+<!-- Year Filter -->
+<div class="card mb-4 shadow-sm">
+    <div class="card-header bg-light">
+        <h5 class="card-title mb-0">Filter by Birth Year</h5>
+    </div>
+    <div class="card-body">
+        <form method="get" action="{% url 'sheep-by-birth-year' %}" class="row g-3 align-items-end">
+            <div class="col-md-6 col-lg-4">
+                <label for="yearSelect" class="form-label fw-bold">Select Year:</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                    <select id="yearSelect" name="year" class="form-select" aria-label="Select birth year">
+                        <option value="">All Years</option>
+                        {% for year in available_years %}
+                            <option value="{{ year }}" {% if selected_year == year %}selected{% endif %}>{{ year }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-8 d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-filter me-2"></i>Apply Filter
+                </button>
+                {% if selected_year %}
+                    <a href="{% url 'sheep-by-birth-year' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-times me-2"></i>Clear
+                    </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if sheep_list %}
+    {% if selected_year %}
+        <!-- Displaying sheep for a specific year -->
+        <div class="card mb-4 shadow">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Sheep Born in {{ selected_year }}</h5>
+                <span class="badge bg-light text-dark">{{ filtered_sheep|length }} sheep</span>
+            </div>
+            <div class="card-body">
+                {% if filtered_sheep %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle table-striped">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Tag # (Name)</th>
+                                <th>Gender</th>
+                                <th>Breed</th>
+                                <th>Status</th>
+                                <th>Birth Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for sheep in filtered_sheep %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'sheep-detail' sheep.id %}">
+                                            {{ sheep.tag_number }}{% if sheep.name %} ({{ sheep.name }}){% endif %}
+                                        </a>
+                                    </td>
+                                    <td>{{ sheep.get_gender_display }}</td>
+                                    <td>{{ sheep.breed.name }}</td>
+                                    <td>
+                                        <span class="badge {% if sheep.status == 'ACTIVE' %}bg-success
+                                                           {% elif sheep.status == 'SOLD' %}bg-primary
+                                                           {% elif sheep.status == 'DECEASED' %}bg-danger
+                                                           {% elif sheep.status == 'CULLED' %}bg-warning text-dark
+                                                           {% else %}bg-secondary{% endif %}">
+                                            {{ sheep.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>{{ sheep.date_of_birth|date:"M d, Y" }}</td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{% url 'sheep-detail' sheep.id %}" class="btn btn-sm btn-info" data-bs-toggle="tooltip" title="View">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{% url 'sheep-update' sheep.id %}" class="btn btn-sm btn-warning" data-bs-toggle="tooltip" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    {% else %}
+        <!-- Displaying all years in cards -->
+        {% for group in year_groups %}
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">{{ group.year }}</h5>
+                    <div>
+                        <span class="badge bg-light text-dark">{{ group.count }} sheep</span>
+                        <a href="{% url 'sheep-by-birth-year' %}?year={{ group.year }}" class="btn btn-sm btn-light ms-2">
+                            <i class="fas fa-filter me-1"></i>Filter
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Tag # (Name)</th>
+                                    <th>Gender</th>
+                                    <th>Breed</th>
+                                    <th>Status</th>
+                                    <th>Birth Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for sheep in group.sheep_list %}
+                                    <tr>
+                                        <td>
+                                            <a href="{% url 'sheep-detail' sheep.id %}">
+                                                {{ sheep.tag_number }}{% if sheep.name %} ({{ sheep.name }}){% endif %}
+                                            </a>
+                                        </td>
+                                        <td>{{ sheep.get_gender_display }}</td>
+                                        <td>{{ sheep.breed.name }}</td>
+                                        <td>
+                                            <span class="badge {% if sheep.status == 'ACTIVE' %}bg-success
+                                                               {% elif sheep.status == 'SOLD' %}bg-primary
+                                                               {% elif sheep.status == 'DECEASED' %}bg-danger
+                                                               {% elif sheep.status == 'CULLED' %}bg-warning text-dark
+                                                               {% else %}bg-secondary{% endif %}">
+                                                {{ sheep.get_status_display }}
+                                            </span>
+                                        </td>
+                                        <td>{{ sheep.date_of_birth|date:"M d, Y" }}</td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a href="{% url 'sheep-detail' sheep.id %}" class="btn btn-sm btn-info" data-bs-toggle="tooltip" title="View">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="{% url 'sheep-update' sheep.id %}" class="btn btn-sm btn-warning" data-bs-toggle="tooltip" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% else %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i>No sheep with birth date records found.
+    </div>
+{% endif %}
+{% endblock %}

@@ -5,11 +5,12 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python Debugger: Django",
+            "name": "Django - Production",
             "type": "debugpy",
             "request": "launch",
             "args": [
                 "runserver",
+                "--settings=sheepflock.settings_production_dev",
                 "0.0.0.0:8000"
             ],
             "django": true,
