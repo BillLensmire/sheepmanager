@@ -38,10 +38,13 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav">
                         <li class="nav-item">
-                            <a class="nav-link {% if 'breeds' in request.path %}active{% endif %}" href="{% url 'breed-list' %}">Breeds</a>
+                            <a class="nav-link {% if 'sheep/sheep/' in request.path %}active{% endif %}" href="{% url 'sheep-list' %}">Sheep</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {% if 'sheep/' in request.path %}active{% endif %}" href="{% url 'sheep-list' %}">Sheep</a>
+                            <a class="nav-link {% if 'sheep/sheep-by-birth-year/' in request.path %}active{% endif %}" href="{% url 'sheep-by-birth-year' %}">Sheep by Birth Year</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if 'breeds' in request.path %}active{% endif %}" href="{% url 'breed-list' %}">Breeds</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {% if 'breeding/' in request.path %}active{% endif %}" href="{% url 'breeding-record-list' %}">Breeding Records</a>

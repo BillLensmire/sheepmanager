@@ -12,7 +12,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'default-key-replace-in-product
 DEBUG = False
 
 # Add your domain name(s) here
-ALLOWED_HOSTS = ['sheep.exnihil.net', 'localhost', '127.0.0.1', '0.0.0.0','192.168.15.211']
+ALLOWED_HOSTS = ['sheep.exnihil.net']
 
 # Database
 # Use SQLite in production

@@ -52,9 +52,9 @@
                                 </a>
                             </th>
                             <th>
-                                <a href="?{% if current_status %}status={{ current_status }}&amp;{% endif %}sort={% if current_sort == 'created_at' and current_sort_dir == 'asc' %}-created_at{% else %}created_at{% endif %}">
-                                    Date Added
-                                    {% if current_sort == 'created_at' %}
+                                <a href="?{% if current_status %}status={{ current_status }}&amp;{% endif %}sort={% if current_sort == 'updated_at' and current_sort_dir == 'asc' %}-updated_at{% else %}updated_at{% endif %}">
+                                    Date Updated
+                                    {% if current_sort == 'updated_at' %}
                                         {% if current_sort_dir == 'asc' %}
                                             <i class="fas fa-sort-up"></i>
                                         {% else %}

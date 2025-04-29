@@ -1,3 +1,4 @@
+from math import trunc
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
@@ -96,22 +97,26 @@ class SheepListView(LoginRequiredMixin, ListView):
     model = Sheep
     template_name = 'sheep/sheep_list.html'
     context_object_name = 'sheep_list'
-    ordering = ['tag_number']
+    ordering = ['-updated_at']
     
     def get_queryset(self):
         queryset = super().get_queryset()
         status_filter = self.request.GET.get('status')
-        if status_filter:
-            queryset = queryset.filter(status=status_filter)
+        if not status_filter:
+            status_filter = 'ACTIVE'
+        queryset = queryset.filter(status=status_filter)
         sort_param = self.request.GET.get('sort')
-        if sort_param in ['tag_number', '-tag_number', 'created_at', '-created_at']:
+        if sort_param in ['tag_number', '-tag_number', 'updated_at', '-updated_at']:
             queryset = queryset.order_by(sort_param)
         return queryset
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['status_choices'] = Sheep.STATUS_CHOICES
-        context['current_status'] = self.request.GET.get('status', '')
+        if not self.request.GET.get('status'):
+            context['current_status'] = 'ACTIVE'
+        else:
+            context['current_status'] = self.request.GET.get('status', '')
         sort_param = self.request.GET.get('sort', '')
         if sort_param.startswith('-'):
             context['current_sort'] = sort_param[1:]
@@ -120,7 +125,7 @@ class SheepListView(LoginRequiredMixin, ListView):
             context['current_sort'] = sort_param
             context['current_sort_dir'] = 'asc'
         else:
-            context['current_sort'] = 'tag_number'
+            context['current_sort'] = 'updated_at'
             context['current_sort_dir'] = 'asc'
         return context
 
@@ -255,6 +260,22 @@ class SheepBirthYearListView(LoginRequiredMixin, ListView):
         # Get the selected year (if any)
         selected_year = self.request.GET.get('year')
         
+        # Check if only active sheep should be shown
+        # First check if the form was submitted using our hidden field
+        active_only_submitted = self.request.GET.get('active_only_submitted')
+        if active_only_submitted:
+            # Form was submitted, checkbox state is determined by presence of active_only
+            active_only = self.request.GET.get('active_only') == 'true'
+        else:
+            # Form was not submitted yet, default to showing active only
+            active_only = True
+        context['active_only'] = active_only
+        
+        # Filter sheep list based on the active_only parameter
+        sheep_list = context['sheep_list']
+        if active_only:
+            sheep_list = [sheep for sheep in sheep_list if sheep.status == 'ACTIVE']
+        
         if selected_year and selected_year.isdigit():
             # User has selected a specific year
             selected_year = int(selected_year)
@@ -262,9 +283,12 @@ class SheepBirthYearListView(LoginRequiredMixin, ListView):
             
             # Filter sheep for the selected year
             filtered_sheep = []
-            for sheep in context['sheep_list']:
+            for sheep in sheep_list:
                 if sheep.date_of_birth and sheep.date_of_birth.year == selected_year:
                     filtered_sheep.append(sheep)
+            
+            # Sort filtered sheep by gender and tag number, same as year groups
+            filtered_sheep = sorted(filtered_sheep, key=lambda x: (x.gender, x.tag_number))
             
             context['filtered_sheep'] = filtered_sheep
             context['year_groups'] = None  # No need for groups when filtering by year
@@ -275,12 +299,16 @@ class SheepBirthYearListView(LoginRequiredMixin, ListView):
             
             # Group sheep by birth year
             sheep_by_year = {}
-            for sheep in context['sheep_list']:
+            for sheep in sheep_list:
                 if sheep.date_of_birth:
                     year = sheep.date_of_birth.year
                     if year not in sheep_by_year:
                         sheep_by_year[year] = []
                     sheep_by_year[year].append(sheep)
+                else:
+                    if 'Unknown' not in sheep_by_year:
+                        sheep_by_year['Unknown'] = []
+                    sheep_by_year['Unknown'].append(sheep)
             
             # Convert to list of (year, sheep_list) tuples and sort by year (descending)
             for year in sorted(sheep_by_year.keys(), reverse=True):
@@ -290,6 +318,10 @@ class SheepBirthYearListView(LoginRequiredMixin, ListView):
                     'sheep_list': sheep_by_year[year],
                     'count': sheep_count
                 })
+            
+            # for each year group, sort by male/female and the by tag number
+            for year_group in year_groups:
+                year_group['sheep_list'] = sorted(year_group['sheep_list'], key=lambda x: (x.gender, x.tag_number))
             
             context['year_groups'] = year_groups
             context['filtered_sheep'] = None
